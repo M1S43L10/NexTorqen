@@ -29,6 +29,10 @@
   color: var(--text-muted);
 }
 
+.users-table tbody tr:hover {
+  background: rgba(255, 107, 0, 0.06);
+}
+
 .search-box input {
   background: transparent;
   border: 0;

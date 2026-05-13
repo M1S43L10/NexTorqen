@@ -1,17 +1,18 @@
 :root {
-  --bg: #f5f7fb;
+  --bg: #f4f4f3;
   --bg-soft: #ffffff;
   --surface: #ffffff;
-  --surface-2: #edf2f8;
-  --text: #101820;
-  --text-muted: #687484;
-  --border: #dce5ef;
-  --primary: #0078ff;
-  --primary-2: #00b2ff;
+  --surface-2: #eceeed;
+  --text: #111315;
+  --text-muted: #68706f;
+  --border: #d9dddc;
+  --primary: #ff6b00;
+  --primary-2: #ff8a00;
+  --accent-cool: #20c6f2;
   --success: #16a34a;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --shadow: 0 18px 48px rgba(20, 31, 46, 0.12);
+  --shadow: 0 18px 48px rgba(10, 11, 12, 0.14);
   --radius: 8px;
   color-scheme: light;
   font-family:
@@ -26,16 +27,17 @@
 }
 
 [data-theme='dark'] {
-  --bg: #080b10;
-  --bg-soft: #0d121a;
-  --surface: #111822;
-  --surface-2: #172231;
-  --text: #eef5ff;
-  --text-muted: #94a3b8;
-  --border: #223146;
-  --primary: #2f8dff;
-  --primary-2: #28d3ff;
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.36);
+  --bg: #070808;
+  --bg-soft: #0c0e0f;
+  --surface: #111414;
+  --surface-2: #1e2223;
+  --text: #f5f5f5;
+  --text-muted: #a7aaa9;
+  --border: #2c2c2c;
+  --primary: #ff6b00;
+  --primary-2: #ff8f1f;
+  --accent-cool: #2bd3ff;
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.48);
   color-scheme: dark;
 }
 
@@ -94,7 +96,8 @@ a {
 
 .btn-primary {
   background: linear-gradient(135deg, var(--primary), var(--primary-2));
-  color: white;
+  box-shadow: 0 10px 30px rgba(255, 107, 0, 0.28);
+  color: #ffffff;
 }
 
 .btn-ghost {
@@ -120,8 +123,15 @@ a {
   width: 40px;
 }
 
+.icon-button:hover,
+.btn-ghost:hover {
+  border-color: rgba(255, 107, 0, 0.46);
+}
+
 .card {
-  background: var(--surface);
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent),
+    var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -159,7 +169,7 @@ a {
 .field select:focus,
 .field textarea:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(0, 120, 255, 0.16);
+  box-shadow: 0 0 0 4px rgba(255, 107, 0, 0.16);
 }
 
 .status-pill {
@@ -174,7 +184,7 @@ a {
 }
 
 .status-admin {
-  background: rgba(0, 120, 255, 0.13);
+  background: rgba(255, 107, 0, 0.14);
   color: var(--primary);
 }
 

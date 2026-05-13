@@ -1,7 +1,8 @@
 .login-page {
   align-items: center;
   background:
-    radial-gradient(circle at 20% 15%, rgba(47, 141, 255, 0.24), transparent 24rem),
+    radial-gradient(circle at 20% 15%, rgba(255, 107, 0, 0.18), transparent 24rem),
+    radial-gradient(circle at 80% 0%, rgba(255, 143, 31, 0.12), transparent 28rem),
     var(--bg);
   display: grid;
   gap: 2rem;
@@ -25,7 +26,7 @@
 
 .login-brand span {
   align-items: center;
-  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  background: linear-gradient(135deg, #f5f5f5 0%, var(--primary) 42%, #1e1e1e 100%);
   border-radius: var(--radius);
   color: white;
   display: inline-flex;
@@ -94,7 +95,7 @@
 .login-aside {
   align-items: end;
   background:
-    linear-gradient(145deg, rgba(47, 141, 255, 0.18), rgba(40, 211, 255, 0.04)),
+    linear-gradient(145deg, rgba(255, 107, 0, 0.16), rgba(255, 143, 31, 0.04)),
     var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -109,6 +110,7 @@
   letter-spacing: 0;
   line-height: 0.95;
   margin: 0.65rem 0;
+  text-transform: uppercase;
 }
 
 @media (max-width: 860px) {
