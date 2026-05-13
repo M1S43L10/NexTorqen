@@ -26,6 +26,8 @@ Credencial inicial:
 
 Sin variables `VITE_FIREBASE_*`, la app usa `localStorage` para que login y CRUD funcionen durante el desarrollo inicial. Al configurar Firebase, se usa Firestore/Auth.
 
+Firebase Auth exige contraseñas de al menos 6 caracteres. Para mantener la credencial inicial solicitada (`admin`), la app usa internamente `admin123` solo como contraseña de Auth del usuario semilla.
+
 ## Firebase
 
 1. Copiar `.env.example` a `.env`.

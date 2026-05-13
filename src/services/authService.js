@@ -33,6 +33,22 @@ const publicUser = (user) => {
   }
 }
 
+const resolveFirebasePassword = (profile, enteredPassword) => {
+  if (
+    profile?.username === DEFAULT_ADMIN.username &&
+    enteredPassword === DEFAULT_ADMIN.password
+  ) {
+    return DEFAULT_ADMIN.authPassword
+  }
+
+  return profile?.authPassword || enteredPassword
+}
+
+const isFirebaseAuthConfigError = (error) =>
+  ['auth/operation-not-allowed', 'auth/configuration-not-found'].includes(error.code) ||
+  error.message?.toLowerCase().includes('configuration_not_found') ||
+  error.message?.toLowerCase().includes('configuration-not-found')
+
 export async function bootstrapAuth() {
   await ensureDefaultAdmin()
 
@@ -69,24 +85,43 @@ export async function login(identifier, password) {
 
   const profileByUsername = await findUserProfileByUsername(identifier)
   const email = profileByUsername?.email || identifier
+  const firebasePassword = resolveFirebasePassword(profileByUsername, password)
 
   try {
-    const credential = await signInWithEmailAndPassword(auth, email, password)
+    const credential = await signInWithEmailAndPassword(auth, email, firebasePassword)
     const profile = await findUserProfileByEmail(credential.user.email)
     return publicUser({ ...credential.user, ...profile })
   } catch (error) {
-    if (
-      email === DEFAULT_ADMIN.email &&
-      password === DEFAULT_ADMIN.password &&
+    const canCreateMissingAuthUser =
+      profileByUsername &&
+      password === profileByUsername.password &&
       ['auth/user-not-found', 'auth/invalid-credential'].includes(error.code)
-    ) {
-      const credential = await createUserWithEmailAndPassword(auth, email, password)
-      await upsertUserProfile(credential.user.uid, {
-        ...DEFAULT_ADMIN,
-        uid: credential.user.uid,
-        createdAt: new Date().toISOString(),
-      })
-      return publicUser({ ...credential.user, ...DEFAULT_ADMIN })
+
+    if (canCreateMissingAuthUser) {
+      try {
+        const credential = await createUserWithEmailAndPassword(auth, email, firebasePassword)
+        await upsertUserProfile(profileByUsername.id || credential.user.uid, {
+          ...profileByUsername,
+          uid: credential.user.uid,
+        })
+        return publicUser({ ...credential.user, ...profileByUsername })
+      } catch (creationError) {
+        if (isFirebaseAuthConfigError(creationError)) {
+          throw new Error(
+            'Firebase Authentication no está inicializado o falta habilitar Email/Password.',
+            { cause: creationError },
+          )
+        }
+
+        throw creationError
+      }
+    }
+
+    if (isFirebaseAuthConfigError(error)) {
+      throw new Error(
+        'Firebase Authentication no está inicializado o falta habilitar Email/Password.',
+        { cause: error },
+      )
     }
 
     throw new Error('Credenciales incorrectas o usuario no disponible en Firebase Auth.', {

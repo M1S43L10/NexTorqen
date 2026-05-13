@@ -100,12 +100,13 @@ export function UsuariosPage() {
       return
     }
 
-    const payload = {
+  const payload = {
       ...form,
       name: form.name.trim(),
       username: form.username.trim(),
       email: form.email.trim(),
       password: form.password,
+      authPassword: form.password.length >= 6 ? form.password : `${form.password}123456`,
     }
 
     try {
