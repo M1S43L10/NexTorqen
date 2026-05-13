@@ -1,0 +1,248 @@
+.admin-shell {
+  background:
+    radial-gradient(circle at top left, rgba(47, 141, 255, 0.18), transparent 28rem),
+    var(--bg);
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: 100svh;
+}
+
+.sidebar {
+  background: rgba(8, 11, 16, 0.92);
+  border-right: 1px solid var(--border);
+  color: #eaf3ff;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  padding: 1.1rem;
+  position: sticky;
+  top: 0;
+  height: 100svh;
+}
+
+[data-theme='light'] .sidebar {
+  background: #101820;
+}
+
+.sidebar-brand {
+  align-items: center;
+  display: flex;
+  gap: 0.8rem;
+  min-height: 52px;
+}
+
+.brand-mark {
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  border-radius: var(--radius);
+  display: flex;
+  font-weight: 950;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.sidebar-brand strong,
+.sidebar-brand span {
+  display: block;
+}
+
+.sidebar-brand span {
+  color: #93a4b8;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.sidebar-close {
+  display: none;
+  margin-left: auto;
+}
+
+.sidebar-nav,
+.sidebar-section {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.sidebar-section {
+  margin-top: 0.5rem;
+}
+
+.sidebar-section > span {
+  color: #7f91a8;
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  margin: 0.6rem 0;
+  text-transform: uppercase;
+}
+
+.sidebar-link {
+  align-items: center;
+  border-radius: var(--radius);
+  color: #b7c6d8;
+  display: flex;
+  font-size: 0.94rem;
+  font-weight: 800;
+  gap: 0.75rem;
+  padding: 0.8rem 0.85rem;
+  transition:
+    background 180ms ease,
+    color 180ms ease;
+}
+
+.sidebar-link.active,
+.sidebar-link:hover {
+  background: rgba(47, 141, 255, 0.17);
+  color: #ffffff;
+}
+
+.sidebar-link.disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+.admin-main {
+  min-width: 0;
+}
+
+.topbar {
+  align-items: center;
+  backdrop-filter: blur(16px);
+  background: rgba(245, 247, 251, 0.78);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  min-height: 76px;
+  padding: 0.85rem 1.4rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+[data-theme='dark'] .topbar {
+  background: rgba(8, 11, 16, 0.76);
+}
+
+.mobile-menu {
+  display: none;
+}
+
+.topbar-title {
+  display: grid;
+  gap: 0.12rem;
+  margin-right: auto;
+}
+
+.topbar-title span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.topbar-title strong {
+  font-size: 1.05rem;
+}
+
+.topbar-actions {
+  align-items: center;
+  display: flex;
+  gap: 0.7rem;
+}
+
+.user-chip {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  gap: 0.65rem;
+  min-height: 44px;
+  padding: 0.35rem 0.7rem 0.35rem 0.4rem;
+}
+
+.user-chip > span {
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  border-radius: 7px;
+  color: white;
+  display: flex;
+  font-weight: 900;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.user-chip strong,
+.user-chip small {
+  display: block;
+  line-height: 1.15;
+}
+
+.user-chip small {
+  color: var(--text-muted);
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.admin-content {
+  padding: 1.4rem;
+}
+
+@media (max-width: 980px) {
+  .admin-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    box-shadow: var(--shadow);
+    left: 0;
+    max-width: 310px;
+    position: fixed;
+    transform: translateX(-105%);
+    transition: transform 220ms ease;
+    width: 86vw;
+    z-index: 30;
+  }
+
+  .sidebar-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-close,
+  .mobile-menu {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 680px) {
+  .topbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 0.8rem;
+  }
+
+  .topbar-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .logout-btn {
+    padding-inline: 0.75rem;
+  }
+
+  .user-chip {
+    min-width: 0;
+  }
+
+  .user-chip div {
+    display: none;
+  }
+
+  .admin-content {
+    padding: 0.85rem;
+  }
+}
