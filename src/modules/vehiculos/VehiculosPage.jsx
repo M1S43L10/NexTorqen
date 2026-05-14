@@ -9,21 +9,38 @@ import {
 } from '../../services/vehicleService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
+import { VehicleSelector } from './VehicleSelector'
 import './VehiculosPage.css'
 
 const emptyForm = {
   plate: '',
-  brand: '',
-  model: '',
+  brand_id_api: '',
+  brand_name: '',
+  model_id_api: '',
+  model_name: '',
+  version_id_api: '',
+  version_name: '',
   year: '',
-  color: '',
+  estimated_value: null,
+  currency: 'ARS',
   mileage: '',
   clientId: '',
   status: 'En taller',
   notes: '',
+  source: 'argautos',
 }
 
 const statusOptions = ['En taller', 'Pendiente', 'Entregado', 'Inactivo']
+
+const formatCurrency = (value, currency = 'ARS') => {
+  if (!value) return '-'
+
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(value)
+}
 
 export function VehiculosPage() {
   const [vehicles, setVehicles] = useState([])
@@ -72,10 +89,10 @@ export function VehiculosPage() {
       const clientName = clientById.get(vehicle.clientId)?.name
       return [
         vehicle.plate,
-        vehicle.brand,
-        vehicle.model,
+        vehicle.brand_name || vehicle.brand,
+        vehicle.model_name || vehicle.model,
+        vehicle.version_name || vehicle.version,
         vehicle.year,
-        vehicle.color,
         vehicle.status,
         clientName,
       ].some((value) =>
@@ -105,14 +122,20 @@ export function VehiculosPage() {
   const openEdit = (vehicle) => {
     setForm({
       plate: vehicle.plate || '',
-      brand: vehicle.brand || '',
-      model: vehicle.model || '',
+      brand_id_api: vehicle.brand_id_api || '',
+      brand_name: vehicle.brand_name || vehicle.brand || '',
+      model_id_api: vehicle.model_id_api || '',
+      model_name: vehicle.model_name || vehicle.model || '',
+      version_id_api: vehicle.version_id_api || '',
+      version_name: vehicle.version_name || vehicle.version || '',
       year: vehicle.year || '',
-      color: vehicle.color || '',
+      estimated_value: vehicle.estimated_value || null,
+      currency: vehicle.currency || 'ARS',
       mileage: vehicle.mileage || '',
       clientId: vehicle.clientId || '',
       status: vehicle.status || 'En taller',
       notes: vehicle.notes || '',
+      source: vehicle.source || 'manual',
     })
     setEditingId(vehicle.id)
     setShowForm(true)
@@ -126,7 +149,7 @@ export function VehiculosPage() {
     const duplicated = vehicles.some(
       (vehicle) =>
         vehicle.id !== editingId &&
-        vehicle.plate.toLowerCase() === form.plate.trim().toLowerCase(),
+        vehicle.plate?.toLowerCase() === form.plate.trim().toLowerCase(),
     )
 
     if (duplicated) {
@@ -135,18 +158,37 @@ export function VehiculosPage() {
       return
     }
 
+    if (!form.brand_name.trim() || !form.model_name.trim()) {
+      setError('Selecciona marca y modelo desde Arg Autos o usa carga manual.')
+      setSaving(false)
+      return
+    }
+
     const client = clientById.get(form.clientId)
     const payload = {
       plate: form.plate.trim().toUpperCase(),
-      brand: form.brand.trim(),
-      model: form.model.trim(),
+      patent: form.plate.trim().toUpperCase(),
+      brand_id_api: form.brand_id_api || '',
+      brand_name: form.brand_name.trim(),
+      brand: form.brand_name.trim(),
+      model_id_api: form.model_id_api || '',
+      model_name: form.model_name.trim(),
+      model: form.model_name.trim(),
+      version_id_api: form.version_id_api || '',
+      version_name: form.version_name.trim(),
+      version: form.version_name.trim(),
       year: form.year.trim(),
-      color: form.color.trim(),
+      estimated_value: form.estimated_value,
+      estimatedValue: form.estimated_value,
+      currency: form.currency || 'ARS',
       mileage: form.mileage.trim(),
+      kilometraje: form.mileage.trim(),
       clientId: form.clientId,
       clientName: client?.name || '',
       status: form.status,
       notes: form.notes.trim(),
+      observaciones: form.notes.trim(),
+      source: form.source || 'manual',
     }
 
     try {
@@ -236,30 +278,6 @@ export function VehiculosPage() {
               />
             </label>
             <label className="field">
-              <span>Marca</span>
-              <input
-                onChange={(event) => setForm((current) => ({ ...current, brand: event.target.value }))}
-                required
-                value={form.brand}
-              />
-            </label>
-            <label className="field">
-              <span>Modelo</span>
-              <input
-                onChange={(event) => setForm((current) => ({ ...current, model: event.target.value }))}
-                required
-                value={form.model}
-              />
-            </label>
-            <label className="field">
-              <span>Ano</span>
-              <input
-                inputMode="numeric"
-                onChange={(event) => setForm((current) => ({ ...current, year: event.target.value }))}
-                value={form.year}
-              />
-            </label>
-            <label className="field">
               <span>Cliente</span>
               <select
                 onChange={(event) => setForm((current) => ({ ...current, clientId: event.target.value }))}
@@ -290,13 +308,6 @@ export function VehiculosPage() {
               </select>
             </label>
             <label className="field">
-              <span>Color</span>
-              <input
-                onChange={(event) => setForm((current) => ({ ...current, color: event.target.value }))}
-                value={form.color}
-              />
-            </label>
-            <label className="field">
               <span>Kilometraje</span>
               <input
                 inputMode="numeric"
@@ -305,13 +316,17 @@ export function VehiculosPage() {
               />
             </label>
             <label className="field">
-              <span>Notas</span>
+              <span>Observaciones</span>
               <input
                 onChange={(event) => setForm((current) => ({ ...current, notes: event.target.value }))}
                 value={form.notes}
               />
             </label>
           </div>
+          <VehicleSelector
+            value={form}
+            onChange={(vehicleData) => setForm((current) => ({ ...current, ...vehicleData }))}
+          />
           <div className="form-actions">
             <button className="btn btn-ghost" type="button" onClick={resetForm}>
               Cancelar
@@ -336,6 +351,7 @@ export function VehiculosPage() {
                   <th>Ano</th>
                   <th>Cliente</th>
                   <th>Kilometraje</th>
+                  <th>Valuacion</th>
                   <th>Estado</th>
                   <th>Creacion</th>
                   <th>Acciones</th>
@@ -347,10 +363,11 @@ export function VehiculosPage() {
                     <td>
                       <code>{vehicle.plate}</code>
                     </td>
-                    <td>{`${vehicle.brand} ${vehicle.model}`}</td>
+                    <td>{`${vehicle.brand_name || vehicle.brand} ${vehicle.model_name || vehicle.model}`}</td>
                     <td>{vehicle.year || '-'}</td>
                     <td>{clientById.get(vehicle.clientId)?.name || vehicle.clientName || '-'}</td>
                     <td>{vehicle.mileage || '-'}</td>
+                    <td>{formatCurrency(vehicle.estimated_value, vehicle.currency)}</td>
                     <td>
                       <span className={`vehicle-status vehicle-status-${vehicle.status?.replaceAll(' ', '-').toLowerCase()}`}>
                         {vehicle.status}
