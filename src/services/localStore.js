@@ -6,6 +6,7 @@ const CLIENTS_KEY = 'nextorqen:clients'
 const VEHICLES_KEY = 'nextorqen:vehicles'
 const WORK_ORDERS_KEY = 'nextorqen:work-orders'
 const STOCK_ITEMS_KEY = 'nextorqen:stock-items'
+const INVOICES_KEY = 'nextorqen:invoices'
 
 const nowIso = () => new Date().toISOString()
 
@@ -100,6 +101,7 @@ export function deleteLocalRecord(key, id) {
 
 export const LOCAL_COLLECTION_KEYS = {
   clients: CLIENTS_KEY,
+  invoices: INVOICES_KEY,
   stockItems: STOCK_ITEMS_KEY,
   vehicles: VEHICLES_KEY,
   workOrders: WORK_ORDERS_KEY,

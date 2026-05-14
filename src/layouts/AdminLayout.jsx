@@ -3,6 +3,7 @@ import {
   Building2,
   CalendarClock,
   Car,
+  FileText,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -26,6 +27,7 @@ const mainNav = [
   { to: '/app/clientes', label: 'Clientes', icon: Building2 },
   { to: '/app/vehiculos', label: 'Vehiculos', icon: Car },
   { to: '/app/stock', label: 'Stock', icon: Package },
+  { to: '/app/facturacion', label: 'Facturacion', icon: FileText },
   { to: '/app/usuarios', label: 'Usuarios', icon: Users },
 ]
 
