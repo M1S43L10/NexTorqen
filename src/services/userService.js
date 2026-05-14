@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  getDoc,
   doc,
   getDocs,
   orderBy,
@@ -16,6 +17,7 @@ import { DEFAULT_ADMIN } from '../utils/defaultAdmin'
 import { getLocalUsers, saveLocalUsers } from './localStore'
 
 const USERS_COLLECTION = 'users'
+const DEFAULT_ADMIN_DOC_ID = 'default-admin'
 
 const mapFirestoreUser = (snapshot) => ({
   id: snapshot.id,
@@ -28,18 +30,27 @@ export async function ensureDefaultAdmin() {
     return
   }
 
-  const usersRef = collection(db, USERS_COLLECTION)
-  const adminQuery = query(usersRef, where('username', '==', DEFAULT_ADMIN.username))
-  const result = await getDocs(adminQuery)
+  const adminRef = doc(db, USERS_COLLECTION, DEFAULT_ADMIN_DOC_ID)
+  const adminSnapshot = await getDoc(adminRef)
 
-  if (result.empty) {
-    await addDoc(usersRef, {
+  if (!adminSnapshot.exists()) {
+    await setDoc(adminRef, {
       ...DEFAULT_ADMIN,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
       source: 'seed',
     })
   }
+
+  const usersRef = collection(db, USERS_COLLECTION)
+  const legacyAdminQuery = query(usersRef, where('username', '==', DEFAULT_ADMIN.username))
+  const legacyAdmins = await getDocs(legacyAdminQuery)
+
+  await Promise.all(
+    legacyAdmins.docs
+      .filter((snapshot) => snapshot.id !== DEFAULT_ADMIN_DOC_ID)
+      .map((snapshot) => deleteDoc(snapshot.ref)),
+  )
 }
 
 export async function listUsers() {
@@ -50,7 +61,17 @@ export async function listUsers() {
   await ensureDefaultAdmin()
   const usersRef = collection(db, USERS_COLLECTION)
   const result = await getDocs(query(usersRef, orderBy('createdAt', 'desc')))
-  return result.docs.map(mapFirestoreUser)
+  const users = result.docs.map(mapFirestoreUser)
+  const uniqueUsers = new Map()
+
+  users.forEach((user) => {
+    const key = user.username || user.email || user.id
+    if (!uniqueUsers.has(key) || user.id === DEFAULT_ADMIN_DOC_ID) {
+      uniqueUsers.set(key, user)
+    }
+  })
+
+  return [...uniqueUsers.values()]
 }
 
 export async function createUser(data) {
@@ -123,6 +144,15 @@ export async function findUserProfileByEmail(email) {
     query(collection(db, USERS_COLLECTION), where('email', '==', email)),
   )
   return result.empty ? null : mapFirestoreUser(result.docs[0])
+}
+
+export async function getDefaultAdminProfile() {
+  if (!isFirebaseConfigured) {
+    return getLocalUsers().find((user) => user.username === DEFAULT_ADMIN.username)
+  }
+
+  const adminSnapshot = await getDoc(doc(db, USERS_COLLECTION, DEFAULT_ADMIN_DOC_ID))
+  return adminSnapshot.exists() ? mapFirestoreUser(adminSnapshot) : null
 }
 
 export async function findUserProfileByUsername(username) {

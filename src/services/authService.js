@@ -18,8 +18,17 @@ import {
   ensureDefaultAdmin,
   findUserProfileByEmail,
   findUserProfileByUsername,
+  getDefaultAdminProfile,
   upsertUserProfile,
 } from './userService'
+
+const withTimeout = (promise, message) =>
+  Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      window.setTimeout(() => reject(new Error(message)), 12000)
+    }),
+  ])
 
 const publicUser = (user) => {
   if (!user) return null
@@ -50,9 +59,8 @@ const isFirebaseAuthConfigError = (error) =>
   error.message?.toLowerCase().includes('configuration-not-found')
 
 export async function bootstrapAuth() {
-  await ensureDefaultAdmin()
-
   if (!isFirebaseConfigured) {
+    await ensureDefaultAdmin()
     return publicUser(getLocalSession())
   }
 
@@ -73,9 +81,8 @@ export async function bootstrapAuth() {
 }
 
 export async function login(identifier, password) {
-  await ensureDefaultAdmin()
-
   if (!isFirebaseConfigured) {
+    await ensureDefaultAdmin()
     const user = findLocalUserByLogin(identifier, password)
     if (!user) throw new Error('Credenciales incorrectas.')
     const session = publicUser(user)
@@ -83,13 +90,37 @@ export async function login(identifier, password) {
     return session
   }
 
-  const profileByUsername = await findUserProfileByUsername(identifier)
+  const normalizedIdentifier = identifier.trim().toLowerCase()
+  const isDefaultAdminLogin =
+    normalizedIdentifier === DEFAULT_ADMIN.username ||
+    normalizedIdentifier === DEFAULT_ADMIN.email.toLowerCase()
+
+  let profileByUsername = isDefaultAdminLogin
+    ? await getDefaultAdminProfile()
+    : await withTimeout(
+        findUserProfileByUsername(identifier),
+        'No se pudo consultar el perfil del usuario en Firestore.',
+      )
+
+  if (isDefaultAdminLogin && !profileByUsername) {
+    profileByUsername = DEFAULT_ADMIN
+  }
+
   const email = profileByUsername?.email || identifier
   const firebasePassword = resolveFirebasePassword(profileByUsername, password)
 
   try {
-    const credential = await signInWithEmailAndPassword(auth, email, firebasePassword)
-    const profile = await findUserProfileByEmail(credential.user.email)
+    const credential = await withTimeout(
+      signInWithEmailAndPassword(auth, email, firebasePassword),
+      'Firebase Auth tardó demasiado en responder.',
+    )
+    const profile =
+      profileByUsername ||
+      (await withTimeout(
+        findUserProfileByEmail(credential.user.email),
+        'No se pudo cargar el perfil del usuario.',
+      ))
+
     return publicUser({ ...credential.user, ...profile })
   } catch (error) {
     const canCreateMissingAuthUser =
