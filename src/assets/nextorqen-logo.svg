@@ -1,0 +1,86 @@
+<svg width="1400" height="420" viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="orangeGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FF8F1F"/>
+      <stop offset="48%" stop-color="#FF6B00"/>
+      <stop offset="100%" stop-color="#C94700"/>
+    </linearGradient>
+    <linearGradient id="metalGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F5F5F5"/>
+      <stop offset="35%" stop-color="#9B9B9B"/>
+      <stop offset="70%" stop-color="#3A3A3A"/>
+      <stop offset="100%" stop-color="#1E1E1E"/>
+    </linearGradient>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <filter id="orangeGlow" x="-45%" y="-45%" width="190%" height="190%">
+      <feGaussianBlur stdDeviation="7" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 1  0 0.35 0 0 0.32  0 0 0 0 0  0 0 0 0.65 0" result="glow"/>
+      <feMerge>
+        <feMergeNode in="glow"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Transparent background -->
+
+  <!-- Industrial premium icon -->
+  <g transform="translate(88 70)" filter="url(#softShadow)">
+    <!-- Gear teeth -->
+    <g fill="#1E1E1E" stroke="url(#metalGrad)" stroke-width="5" stroke-linejoin="round">
+      <rect x="125" y="0" width="38" height="54" rx="5"/>
+      <rect x="125" y="226" width="38" height="54" rx="5"/>
+      <rect x="0" y="125" width="54" height="38" rx="5"/>
+      <rect x="226" y="125" width="54" height="38" rx="5"/>
+      <rect x="36" y="36" width="46" height="38" rx="5" transform="rotate(-45 59 55)"/>
+      <rect x="198" y="198" width="46" height="38" rx="5" transform="rotate(-45 221 217)"/>
+      <rect x="198" y="36" width="46" height="38" rx="5" transform="rotate(45 221 55)"/>
+      <rect x="36" y="198" width="46" height="38" rx="5" transform="rotate(45 59 217)"/>
+    </g>
+
+    <!-- Gear body -->
+    <circle cx="140" cy="140" r="112" fill="#101111" stroke="url(#metalGrad)" stroke-width="12"/>
+    <circle cx="140" cy="140" r="84" fill="#070808" stroke="#F5F5F5" stroke-width="8"/>
+    <circle cx="140" cy="140" r="69" fill="#111111" stroke="#2C2C2C" stroke-width="3"/>
+
+    <!-- Speed/torque arc -->
+    <path d="M61 148C72 93 113 60 164 61" stroke="#F5F5F5" stroke-width="10" stroke-linecap="round"/>
+    <path d="M214 132C213 194 170 227 114 218" stroke="#FF6B00" stroke-width="8" stroke-linecap="round" opacity="0.9"/>
+
+    <!-- Stylized N + wrench -->
+    <g filter="url(#orangeGlow)">
+      <path d="M76 204L112 72H146L169 156L202 72H244L204 205H170L147 122L115 204H76Z" fill="url(#orangeGrad)" stroke="#F5F5F5" stroke-width="5" stroke-linejoin="round"/>
+      <!-- Wrench head integrated to right stroke -->
+      <path d="M202 75C225 57 253 57 270 75L248 98L270 119C251 137 225 137 203 120L188 154L166 142L184 101L202 75Z" fill="url(#orangeGrad)" stroke="#F5F5F5" stroke-width="5" stroke-linejoin="round"/>
+      <!-- Inner cut for mechanical sharpness -->
+      <path d="M119 184L144 129L160 184H119Z" fill="#070808" opacity="0.95"/>
+    </g>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(405 113)">
+    <text x="0" y="120"
+      font-family="Poppins, Montserrat, Arial, sans-serif"
+      font-size="104"
+      font-weight="700"
+      letter-spacing="-3"
+      fill="#F5F5F5"
+      stroke="#1E1E1E"
+      stroke-width="2">Nex</text>
+
+    <text x="194" y="120"
+      font-family="Poppins, Montserrat, Arial, sans-serif"
+      font-size="104"
+      font-weight="800"
+      letter-spacing="-3"
+      fill="url(#orangeGrad)"
+      stroke="#F5F5F5"
+      stroke-width="1.4">Torqen</text>
+
+    <!-- Premium underline / motion line -->
+    <path d="M12 155H302C430 155 555 146 704 127" stroke="url(#orangeGrad)" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+    <path d="M22 173H250C365 173 485 167 610 151" stroke="#4A4A4A" stroke-width="3" stroke-linecap="round" opacity="0.65"/>
+  </g>
+</svg>

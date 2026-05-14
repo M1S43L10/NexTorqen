@@ -32,31 +32,12 @@
   min-height: 52px;
 }
 
-.brand-mark {
-  align-items: center;
-  background: linear-gradient(135deg, #f5f5f5 0%, var(--primary) 42%, #1e1e1e 100%);
-  border-radius: var(--radius);
-  display: flex;
-  font-weight: 950;
-  height: 42px;
-  justify-content: center;
-  width: 42px;
-}
-
-.sidebar-brand strong,
-.sidebar-brand span {
+.sidebar-logo {
   display: block;
-}
-
-.sidebar-brand strong {
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-}
-
-.sidebar-brand span {
-  color: #93a4b8;
-  font-size: 0.78rem;
-  font-weight: 800;
+  height: 62px;
+  object-fit: contain;
+  object-position: left center;
+  width: 228px;
 }
 
 .sidebar-close {

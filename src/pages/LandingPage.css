@@ -27,15 +27,12 @@
   gap: 0.65rem;
 }
 
-.landing-brand span {
-  align-items: center;
-  background: linear-gradient(135deg, #f5f5f5 0%, var(--primary) 42%, #2c2c2c 100%);
-  border-radius: var(--radius);
-  color: white;
-  display: flex;
-  height: 38px;
-  justify-content: center;
-  width: 38px;
+.landing-brand img {
+  display: block;
+  height: 62px;
+  object-fit: contain;
+  object-position: left center;
+  width: 246px;
 }
 
 .landing-nav {
@@ -82,11 +79,21 @@
 }
 
 .hero-copy h1 {
-  font-size: clamp(4rem, 9vw, 7.4rem);
-  letter-spacing: 0;
-  line-height: 0.92;
-  margin: 0;
-  text-transform: uppercase;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.hero-logo {
+  display: block;
+  height: auto;
+  max-width: min(600px, 88vw);
+  width: 100%;
 }
 
 .hero-copy p {
@@ -298,6 +305,11 @@
 
   .landing-header .btn {
     width: 100%;
+  }
+
+  .landing-brand img {
+    height: 54px;
+    width: 208px;
   }
 
   .benefit-grid,

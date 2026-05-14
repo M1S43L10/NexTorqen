@@ -11,6 +11,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import nextorqenLogo from '../assets/nextorqen-logo.svg'
 import './LandingPage.css'
 
 const benefits = [
@@ -32,8 +33,7 @@ export function LandingPage() {
     <div className="landing-page">
       <header className="landing-header">
         <a className="landing-brand" href="#inicio" aria-label="NexTorqen inicio">
-          <span>NT</span>
-          NexTorqen
+          <img src={nextorqenLogo} alt="NexTorqen" />
         </a>
         <nav className="landing-nav" aria-label="Navegación pública">
           <a href="#beneficios">Beneficios</a>
@@ -53,6 +53,7 @@ export function LandingPage() {
               <Sparkles size={16} />
               Sistema SaaS para talleres modernos
             </div>
+            <img className="hero-logo" src={nextorqenLogo} alt="" aria-hidden="true" />
             <h1>NexTorqen</h1>
             <p>
               Plataforma de gestión para talleres mecánicos y servicios automotrices:

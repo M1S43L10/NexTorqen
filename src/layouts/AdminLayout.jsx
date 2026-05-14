@@ -17,6 +17,7 @@ import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
+import nextorqenLogo from '../assets/nextorqen-logo.svg'
 import './AdminLayout.css'
 
 const mainNav = [
@@ -48,11 +49,7 @@ export function AdminLayout() {
     <div className="admin-shell">
       <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-brand">
-          <div className="brand-mark">NT</div>
-          <div>
-            <strong>NexTorqen</strong>
-            <span>Workshop OS</span>
-          </div>
+          <img className="sidebar-logo" src={nextorqenLogo} alt="NexTorqen" />
           <button
             className="icon-button sidebar-close"
             type="button"

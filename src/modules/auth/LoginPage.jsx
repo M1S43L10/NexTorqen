@@ -2,6 +2,7 @@ import { AlertCircle, LockKeyhole, UserRound } from 'lucide-react'
 import { useState } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
+import nextorqenLogo from '../../assets/nextorqen-logo.svg'
 import { DEFAULT_ADMIN } from '../../utils/defaultAdmin'
 import './LoginPage.css'
 
@@ -36,8 +37,7 @@ export function LoginPage() {
     <main className="login-page">
       <section className="login-panel card">
         <Link className="login-brand" to="/">
-          <span>NT</span>
-          NexTorqen
+          <img src={nextorqenLogo} alt="NexTorqen" />
         </Link>
         <div>
           <p className="login-kicker">Acceso seguro</p>
