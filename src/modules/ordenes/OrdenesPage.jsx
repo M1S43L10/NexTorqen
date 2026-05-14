@@ -11,6 +11,11 @@ import {
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { listClients } from '../../services/clientService'
+import {
+  applyStockMovements,
+  listStockItems,
+  validateStockAvailability,
+} from '../../services/stockService'
 import { listVehicles } from '../../services/vehicleService'
 import {
   createWorkOrder,
@@ -23,6 +28,7 @@ import '../usuarios/UsuariosPage.css'
 import './OrdenesPage.css'
 
 const emptyLineItem = { description: '', quantity: '1', price: '' }
+const emptyPartItem = { description: '', quantity: '1', price: '', stockItemId: '', sku: '' }
 
 const createEmptyForm = () => ({
   number: '',
@@ -62,11 +68,14 @@ const normalizeItems = (items) =>
       quantity: parseAmount(item.quantity) || 1,
       price: parseAmount(item.price),
       subtotal: (parseAmount(item.quantity) || 1) * parseAmount(item.price),
+      stockItemId: item.stockItemId || '',
+      sku: item.sku || '',
     }))
 
 export function OrdenesPage() {
   const [orders, setOrders] = useState([])
   const [clients, setClients] = useState([])
+  const [stockItems, setStockItems] = useState([])
   const [vehicles, setVehicles] = useState([])
   const [query, setQuery] = useState('')
   const [form, setForm] = useState(createEmptyForm)
@@ -86,6 +95,11 @@ export function OrdenesPage() {
     [vehicles],
   )
 
+  const stockById = useMemo(
+    () => new Map(stockItems.map((item) => [item.id, item])),
+    [stockItems],
+  )
+
   const vehiclesForClient = useMemo(
     () => vehicles.filter((vehicle) => !form.clientId || vehicle.clientId === form.clientId),
     [form.clientId, vehicles],
@@ -103,26 +117,29 @@ export function OrdenesPage() {
 
   const loadData = async (withLoading = true) => {
     if (withLoading) setLoading(true)
-    const [ordersResult, clientsResult, vehiclesResult] = await Promise.all([
+    const [ordersResult, clientsResult, vehiclesResult, stockItemsResult] = await Promise.all([
       listWorkOrders(),
       listClients(),
       listVehicles(),
+      listStockItems(),
     ])
     setOrders(ordersResult)
     setClients(clientsResult)
     setVehicles(vehiclesResult)
+    setStockItems(stockItemsResult)
     if (withLoading) setLoading(false)
   }
 
   useEffect(() => {
     let active = true
 
-    Promise.all([listWorkOrders(), listClients(), listVehicles()]).then(
-      ([ordersResult, clientsResult, vehiclesResult]) => {
+    Promise.all([listWorkOrders(), listClients(), listVehicles(), listStockItems()]).then(
+      ([ordersResult, clientsResult, vehiclesResult, stockItemsResult]) => {
         if (!active) return
         setOrders(ordersResult)
         setClients(clientsResult)
         setVehicles(vehiclesResult)
+        setStockItems(stockItemsResult)
         setLoading(false)
       },
     )
@@ -210,7 +227,7 @@ export function OrdenesPage() {
   const addLineItem = (type) => {
     setForm((current) => ({
       ...current,
-      [type]: [...current[type], { ...emptyLineItem }],
+      [type]: [...current[type], type === 'parts' ? { ...emptyPartItem } : { ...emptyLineItem }],
     }))
   }
 
@@ -227,6 +244,24 @@ export function OrdenesPage() {
       ...current,
       clientId,
       vehicleId: firstVehicle?.id || '',
+    }))
+  }
+
+  const handleStockPartChange = (index, stockItemId) => {
+    const stockItem = stockById.get(stockItemId)
+    setForm((current) => ({
+      ...current,
+      parts: current.parts.map((part, partIndex) =>
+        partIndex === index
+          ? {
+              ...part,
+              stockItemId,
+              sku: stockItem?.sku || '',
+              description: stockItem?.name || part.description,
+              price: stockItem?.salePrice ? String(stockItem.salePrice) : part.price,
+            }
+          : part,
+      ),
     }))
   }
 
@@ -270,6 +305,7 @@ export function OrdenesPage() {
 
     const client = clientById.get(form.clientId)
     const vehicle = vehicleById.get(form.vehicleId)
+    const previousOrder = orders.find((order) => order.id === editingId)
     const vehicleLabel = `${vehicle?.plate || ''} ${vehicle?.brand_name || vehicle?.brand || ''} ${
       vehicle?.model_name || vehicle?.model || ''
     }`.trim()
@@ -297,11 +333,13 @@ export function OrdenesPage() {
     }
 
     try {
+      await validateStockAvailability(previousOrder?.parts || [], parts)
       if (editingId) {
         await updateWorkOrder(editingId, payload)
       } else {
         await createWorkOrder(payload)
       }
+      await applyStockMovements(previousOrder?.parts || [], parts)
       await loadData()
       resetForm()
     } catch (saveError) {
@@ -330,7 +368,25 @@ export function OrdenesPage() {
       </div>
       {form[type].length ? (
         form[type].map((item, index) => (
-          <div className="order-item-row" key={`${type}-${index}`}>
+          <div className={`order-item-row ${type === 'parts' ? 'part-item-row' : ''}`} key={`${type}-${index}`}>
+            {type === 'parts' ? (
+              <label className="field">
+                <span>Repuesto de stock</span>
+                <select
+                  onChange={(event) => handleStockPartChange(index, event.target.value)}
+                  value={item.stockItemId || ''}
+                >
+                  <option value="">Manual / sin stock</option>
+                  {stockItems
+                    .filter((stockItem) => stockItem.active !== false)
+                    .map((stockItem) => (
+                      <option key={stockItem.id} value={stockItem.id}>
+                        {`${stockItem.sku ? `${stockItem.sku} - ` : ''}${stockItem.name} (${stockItem.stock} disp.)`}
+                      </option>
+                    ))}
+                </select>
+              </label>
+            ) : null}
             <label className="field">
               <span>Detalle</span>
               <input

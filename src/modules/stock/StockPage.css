@@ -1,0 +1,63 @@
+.stock-summary {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.stock-mini-card {
+  align-items: center;
+  display: flex;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.stock-mini-card svg {
+  color: var(--primary);
+}
+
+.stock-mini-card strong,
+.stock-mini-card span {
+  display: block;
+}
+
+.stock-mini-card strong {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.stock-mini-card span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.checkbox-field input {
+  height: 22px;
+  min-height: 22px;
+  width: 22px;
+}
+
+.stock-status {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 900;
+  padding: 0.35rem 0.65rem;
+}
+
+.stock-status-ok {
+  background: rgba(22, 163, 74, 0.14);
+  color: var(--success);
+}
+
+.stock-status-low {
+  background: rgba(245, 158, 11, 0.14);
+  color: var(--warning);
+}
+
+@media (max-width: 860px) {
+  .stock-summary {
+    grid-template-columns: 1fr;
+  }
+}

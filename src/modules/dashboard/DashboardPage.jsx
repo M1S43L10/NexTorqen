@@ -1,6 +1,7 @@
 import { Activity, Car, ClipboardList, UserRound, Users, Wrench } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { listClients } from '../../services/clientService'
+import { listStockItems } from '../../services/stockService'
 import { listUsers } from '../../services/userService'
 import { listVehicles } from '../../services/vehicleService'
 import { listWorkOrders } from '../../services/workOrderService'
@@ -16,22 +17,28 @@ export function DashboardPage() {
     clients: 0,
     vehicles: 0,
     orders: 0,
+    stockItems: 0,
   })
 
   useEffect(() => {
     let active = true
 
-    Promise.all([listUsers(), listClients(), listVehicles(), listWorkOrders()]).then(
-      ([users, clients, vehicles, orders]) => {
+    Promise.all([
+      listUsers(),
+      listClients(),
+      listVehicles(),
+      listWorkOrders(),
+      listStockItems(),
+    ]).then(([users, clients, vehicles, orders, stockItems]) => {
         if (!active) return
         setStatsData({
           users: users.length,
           clients: clients.length,
           vehicles: vehicles.length,
           orders: orders.length,
+          stockItems: stockItems.length,
         })
-      },
-    )
+      })
 
     return () => {
       active = false
@@ -43,6 +50,7 @@ export function DashboardPage() {
     { label: 'Clientes activos', value: statsData.clients, icon: UserRound, tone: 'green' },
     { label: 'Vehiculos', value: statsData.vehicles, icon: Car, tone: 'blue' },
     { label: 'Ordenes', value: statsData.orders, icon: ClipboardList, tone: 'amber' },
+    { label: 'Repuestos', value: statsData.stockItems, icon: Wrench, tone: 'green' },
     ...placeholderStats,
   ]
 
