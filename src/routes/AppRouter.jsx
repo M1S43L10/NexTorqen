@@ -1,8 +1,10 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { AdminLayout } from '../layouts/AdminLayout'
 import { LoginPage } from '../modules/auth/LoginPage'
+import { ClientesPage } from '../modules/clientes/ClientesPage'
 import { DashboardPage } from '../modules/dashboard/DashboardPage'
 import { UsuariosPage } from '../modules/usuarios/UsuariosPage'
+import { VehiculosPage } from '../modules/vehiculos/VehiculosPage'
 import { LandingPage } from '../pages/LandingPage'
 import { ProtectedRoute } from './ProtectedRoute'
 
@@ -15,6 +17,8 @@ export function AppRouter() {
         <Route element={<ProtectedRoute />}>
           <Route path="/app" element={<AdminLayout />}>
             <Route index element={<DashboardPage />} />
+            <Route path="clientes" element={<ClientesPage />} />
+            <Route path="vehiculos" element={<VehiculosPage />} />
             <Route path="usuarios" element={<UsuariosPage />} />
           </Route>
         </Route>

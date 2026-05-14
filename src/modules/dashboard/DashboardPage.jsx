@@ -1,29 +1,54 @@
-import { Activity, Car, ClipboardList, Users, Wrench } from 'lucide-react'
+import { Activity, Car, ClipboardList, UserRound, Users, Wrench } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { listClients } from '../../services/clientService'
 import { listUsers } from '../../services/userService'
+import { listVehicles } from '../../services/vehicleService'
 import './DashboardPage.css'
 
 const placeholderStats = [
-  { label: 'Vehículos', value: '0', icon: Car, tone: 'blue' },
-  { label: 'Órdenes', value: '0', icon: ClipboardList, tone: 'amber' },
+  { label: 'Ordenes', value: '0', icon: ClipboardList, tone: 'amber' },
   { label: 'Servicios realizados', value: '0', icon: Wrench, tone: 'green' },
 ]
 
 export function DashboardPage() {
-  const [userCount, setUserCount] = useState(0)
+  const [statsData, setStatsData] = useState({
+    users: 0,
+    clients: 0,
+    vehicles: 0,
+  })
 
   useEffect(() => {
-    listUsers().then((users) => setUserCount(users.length))
+    let active = true
+
+    Promise.all([listUsers(), listClients(), listVehicles()]).then(
+      ([users, clients, vehicles]) => {
+        if (!active) return
+        setStatsData({
+          users: users.length,
+          clients: clients.length,
+          vehicles: vehicles.length,
+        })
+      },
+    )
+
+    return () => {
+      active = false
+    }
   }, [])
 
-  const stats = [{ label: 'Usuarios registrados', value: userCount, icon: Users, tone: 'blue' }, ...placeholderStats]
+  const stats = [
+    { label: 'Usuarios registrados', value: statsData.users, icon: Users, tone: 'blue' },
+    { label: 'Clientes activos', value: statsData.clients, icon: UserRound, tone: 'green' },
+    { label: 'Vehiculos', value: statsData.vehicles, icon: Car, tone: 'blue' },
+    ...placeholderStats,
+  ]
 
   return (
     <section className="dashboard-page">
       <div className="page-heading">
         <span>Resumen general</span>
         <h1>Dashboard</h1>
-        <p>Indicadores iniciales para controlar usuarios, vehículos, órdenes y servicios.</p>
+        <p>Indicadores iniciales para controlar usuarios, clientes, vehiculos, ordenes y servicios.</p>
       </div>
 
       <div className="stats-grid">
@@ -50,32 +75,30 @@ export function DashboardPage() {
             <div>
               <span />
               <strong>Base del sistema</strong>
-              <p>Autenticación, roles, rutas protegidas y gestión de usuarios activa.</p>
+              <p>Autenticacion, roles, rutas protegidas y gestion de usuarios activa.</p>
             </div>
             <div>
               <span />
-              <strong>Siguiente módulo</strong>
-              <p>Clientes y vehículos pueden agregarse con el mismo patrón modular.</p>
+              <strong>Clientes y vehiculos</strong>
+              <p>Ya podes cargar clientes y vincular unidades para preparar ordenes de trabajo.</p>
             </div>
             <div>
               <span />
               <strong>Escalado</strong>
-              <p>Órdenes, stock, turnos, facturación y reportes quedan como módulos separados.</p>
+              <p>Ordenes, stock, turnos, facturacion y reportes quedan como modulos separados.</p>
             </div>
           </div>
         </article>
 
         <article className="card next-modules-card">
-          <h2>Módulos futuros</h2>
+          <h2>Modulos futuros</h2>
           <div className="module-tags">
             {[
-              'Clientes',
-              'Vehículos',
-              'Órdenes',
+              'Ordenes',
               'Aceite',
               'Historial',
               'Stock',
-              'Facturación',
+              'Facturacion',
               'Turnos',
               'Sucursales',
               'Reportes',

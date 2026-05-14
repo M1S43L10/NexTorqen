@@ -2,6 +2,8 @@ import { DEFAULT_ADMIN } from '../utils/defaultAdmin'
 
 const USERS_KEY = 'nextorqen:users'
 const SESSION_KEY = 'nextorqen:session'
+const CLIENTS_KEY = 'nextorqen:clients'
+const VEHICLES_KEY = 'nextorqen:vehicles'
 
 const nowIso = () => new Date().toISOString()
 
@@ -55,4 +57,46 @@ export function findLocalUserByLogin(identifier, password) {
         user.email.toLowerCase() === normalizedIdentifier) &&
       user.password === password,
   )
+}
+
+export function getLocalCollection(key) {
+  const stored = localStorage.getItem(key)
+  return stored ? JSON.parse(stored) : []
+}
+
+export function saveLocalCollection(key, items) {
+  localStorage.setItem(key, JSON.stringify(items))
+}
+
+export function createLocalRecord(key, data) {
+  const items = getLocalCollection(key)
+  const record = {
+    ...data,
+    id: crypto.randomUUID(),
+    createdAt: nowIso(),
+    updatedAt: nowIso(),
+  }
+  saveLocalCollection(key, [record, ...items])
+  return record
+}
+
+export function updateLocalRecord(key, id, data) {
+  const items = getLocalCollection(key)
+  const nextItems = items.map((item) =>
+    item.id === id ? { ...item, ...data, updatedAt: nowIso() } : item,
+  )
+  saveLocalCollection(key, nextItems)
+  return nextItems.find((item) => item.id === id)
+}
+
+export function deleteLocalRecord(key, id) {
+  saveLocalCollection(
+    key,
+    getLocalCollection(key).filter((item) => item.id !== id),
+  )
+}
+
+export const LOCAL_COLLECTION_KEYS = {
+  clients: CLIENTS_KEY,
+  vehicles: VEHICLES_KEY,
 }
