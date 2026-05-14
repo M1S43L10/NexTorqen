@@ -22,13 +22,13 @@ import './AdminLayout.css'
 
 const mainNav = [
   { to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true },
+  { to: '/app/ordenes', label: 'Ordenes', icon: Wrench },
   { to: '/app/clientes', label: 'Clientes', icon: Building2 },
   { to: '/app/vehiculos', label: 'Vehiculos', icon: Car },
   { to: '/app/usuarios', label: 'Usuarios', icon: Users },
 ]
 
 const futureNav = [
-  { label: 'Órdenes', icon: Wrench },
   { label: 'Turnos', icon: CalendarClock },
   { label: 'Stock', icon: Package },
   { label: 'Reportes', icon: BarChart3 },

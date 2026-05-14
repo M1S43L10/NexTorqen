@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react'
 import { listClients } from '../../services/clientService'
 import { listUsers } from '../../services/userService'
 import { listVehicles } from '../../services/vehicleService'
+import { listWorkOrders } from '../../services/workOrderService'
 import './DashboardPage.css'
 
 const placeholderStats = [
-  { label: 'Ordenes', value: '0', icon: ClipboardList, tone: 'amber' },
   { label: 'Servicios realizados', value: '0', icon: Wrench, tone: 'green' },
 ]
 
@@ -15,18 +15,20 @@ export function DashboardPage() {
     users: 0,
     clients: 0,
     vehicles: 0,
+    orders: 0,
   })
 
   useEffect(() => {
     let active = true
 
-    Promise.all([listUsers(), listClients(), listVehicles()]).then(
-      ([users, clients, vehicles]) => {
+    Promise.all([listUsers(), listClients(), listVehicles(), listWorkOrders()]).then(
+      ([users, clients, vehicles, orders]) => {
         if (!active) return
         setStatsData({
           users: users.length,
           clients: clients.length,
           vehicles: vehicles.length,
+          orders: orders.length,
         })
       },
     )
@@ -40,6 +42,7 @@ export function DashboardPage() {
     { label: 'Usuarios registrados', value: statsData.users, icon: Users, tone: 'blue' },
     { label: 'Clientes activos', value: statsData.clients, icon: UserRound, tone: 'green' },
     { label: 'Vehiculos', value: statsData.vehicles, icon: Car, tone: 'blue' },
+    { label: 'Ordenes', value: statsData.orders, icon: ClipboardList, tone: 'amber' },
     ...placeholderStats,
   ]
 
