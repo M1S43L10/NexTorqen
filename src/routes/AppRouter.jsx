@@ -6,6 +6,7 @@ import { DashboardPage } from '../modules/dashboard/DashboardPage'
 import { FacturacionPage } from '../modules/facturacion/FacturacionPage'
 import { OrdenesPage } from '../modules/ordenes/OrdenesPage'
 import { StockPage } from '../modules/stock/StockPage'
+import { TurnosPage } from '../modules/turnos/TurnosPage'
 import { UsuariosPage } from '../modules/usuarios/UsuariosPage'
 import { VehiculosPage } from '../modules/vehiculos/VehiculosPage'
 import { LandingPage } from '../pages/LandingPage'
@@ -25,6 +26,7 @@ export function AppRouter() {
             <Route path="ordenes" element={<OrdenesPage />} />
             <Route path="stock" element={<StockPage />} />
             <Route path="facturacion" element={<FacturacionPage />} />
+            <Route path="turnos" element={<TurnosPage />} />
             <Route path="usuarios" element={<UsuariosPage />} />
           </Route>
         </Route>

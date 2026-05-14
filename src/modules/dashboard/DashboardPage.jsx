@@ -1,5 +1,6 @@
-import { Activity, Car, ClipboardList, UserRound, Users, Wrench } from 'lucide-react'
+import { Activity, CalendarClock, Car, ClipboardList, UserRound, Users, Wrench } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { listAppointments } from '../../services/appointmentService'
 import { listClients } from '../../services/clientService'
 import { listInvoices } from '../../services/invoiceService'
 import { listStockItems } from '../../services/stockService'
@@ -20,6 +21,7 @@ export function DashboardPage() {
     orders: 0,
     stockItems: 0,
     invoices: 0,
+    appointments: 0,
   })
 
   useEffect(() => {
@@ -32,7 +34,8 @@ export function DashboardPage() {
       listWorkOrders(),
       listStockItems(),
       listInvoices(),
-    ]).then(([users, clients, vehicles, orders, stockItems, invoices]) => {
+      listAppointments(),
+    ]).then(([users, clients, vehicles, orders, stockItems, invoices, appointments]) => {
         if (!active) return
         setStatsData({
           users: users.length,
@@ -41,6 +44,7 @@ export function DashboardPage() {
           orders: orders.length,
           stockItems: stockItems.length,
           invoices: invoices.length,
+          appointments: appointments.length,
         })
       })
 
@@ -56,6 +60,7 @@ export function DashboardPage() {
     { label: 'Ordenes', value: statsData.orders, icon: ClipboardList, tone: 'amber' },
     { label: 'Repuestos', value: statsData.stockItems, icon: Wrench, tone: 'green' },
     { label: 'Facturas', value: statsData.invoices, icon: ClipboardList, tone: 'amber' },
+    { label: 'Turnos', value: statsData.appointments, icon: CalendarClock, tone: 'blue' },
     ...placeholderStats,
   ]
 

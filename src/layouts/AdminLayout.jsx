@@ -28,11 +28,11 @@ const mainNav = [
   { to: '/app/vehiculos', label: 'Vehiculos', icon: Car },
   { to: '/app/stock', label: 'Stock', icon: Package },
   { to: '/app/facturacion', label: 'Facturacion', icon: FileText },
+  { to: '/app/turnos', label: 'Turnos', icon: CalendarClock },
   { to: '/app/usuarios', label: 'Usuarios', icon: Users },
 ]
 
 const futureNav = [
-  { label: 'Turnos', icon: CalendarClock },
   { label: 'Reportes', icon: BarChart3 },
 ]
 

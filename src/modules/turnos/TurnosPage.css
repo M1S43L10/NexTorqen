@@ -1,0 +1,77 @@
+.turnos-summary {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.appointment-mini-card {
+  align-items: center;
+  display: flex;
+  gap: 0.85rem;
+  padding: 1rem;
+}
+
+.appointment-mini-card svg {
+  color: var(--primary);
+}
+
+.appointment-mini-card strong,
+.appointment-mini-card span {
+  display: block;
+}
+
+.appointment-mini-card strong {
+  font-size: 1.35rem;
+  line-height: 1.1;
+}
+
+.appointment-mini-card span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.turnos-page .form-warning {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  border-radius: var(--radius);
+  color: var(--warning);
+  font-weight: 800;
+  padding: 0.8rem;
+}
+
+.appointment-status {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.76rem;
+  font-weight: 900;
+  padding: 0.35rem 0.65rem;
+}
+
+.appointment-status-programado,
+.appointment-status-confirmado {
+  background: rgba(245, 158, 11, 0.14);
+  color: var(--warning);
+}
+
+.appointment-status-en-taller {
+  background: rgba(255, 107, 0, 0.14);
+  color: var(--primary);
+}
+
+.appointment-status-completado {
+  background: rgba(22, 163, 74, 0.14);
+  color: var(--success);
+}
+
+.appointment-status-cancelado {
+  background: rgba(239, 68, 68, 0.14);
+  color: var(--danger);
+}
+
+@media (max-width: 860px) {
+  .turnos-summary {
+    grid-template-columns: 1fr;
+  }
+}
