@@ -1,4 +1,4 @@
-import { CalendarClock, CheckCircle2, Clock, Edit3, MessageCircle, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
+import { CalendarClock, CheckCircle2, Clock, Download, Edit3, MessageCircle, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -11,6 +11,7 @@ import { listClients } from '../../services/clientService'
 import { listVehicles } from '../../services/vehicleService'
 import { appointmentCancelledMessage, appointmentReminderMessage, openWhatsApp } from '../../services/whatsappService'
 import { createWorkOrder, listWorkOrders } from '../../services/workOrderService'
+import { exportToCsv } from '../../services/exportService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
 import './TurnosPage.css'
@@ -364,6 +365,25 @@ export function TurnosPage() {
             value={query}
           />
         </label>
+        <button
+          className="btn btn-ghost"
+          type="button"
+          onClick={() =>
+            exportToCsv('nextorqen-turnos', filteredAppointments, [
+              { label: 'Fecha', value: 'date' },
+              { label: 'Hora', value: 'time' },
+              { label: 'Cliente', value: 'clientName' },
+              { label: 'Vehiculo', value: 'vehicleLabel' },
+              { label: 'Tipo', value: 'type' },
+              { label: 'Estado', value: 'status' },
+              { label: 'Responsable', value: 'assignedTo' },
+              { label: 'Motivo', value: 'reason' },
+            ])
+          }
+        >
+          <Download size={17} />
+          Exportar
+        </button>
       </div>
 
       {showForm ? (

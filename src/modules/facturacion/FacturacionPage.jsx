@@ -1,4 +1,4 @@
-import { CreditCard, Edit3, FileText, MessageCircle, Plus, ReceiptText, Search, Trash2, X } from 'lucide-react'
+import { CreditCard, Download, Edit3, FileText, MessageCircle, Plus, ReceiptText, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { listClients } from '../../services/clientService'
 import {
@@ -9,6 +9,7 @@ import {
 } from '../../services/invoiceService'
 import { listWorkOrders } from '../../services/workOrderService'
 import { invoiceMessage, openWhatsApp } from '../../services/whatsappService'
+import { exportToCsv } from '../../services/exportService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
 import './FacturacionPage.css'
@@ -325,6 +326,27 @@ export function FacturacionPage() {
             value={query}
           />
         </label>
+        <button
+          className="btn btn-ghost"
+          type="button"
+          onClick={() =>
+            exportToCsv('nextorqen-facturas', filteredInvoices, [
+              { label: 'Factura', value: 'number' },
+              { label: 'Orden', value: 'orderNumber' },
+              { label: 'Cliente', value: 'clientName' },
+              { label: 'Vehiculo', value: 'vehicleLabel' },
+              { label: 'Estado', value: 'status' },
+              { label: 'Pago', value: 'paymentMethod' },
+              { label: 'Subtotal', value: 'subtotal' },
+              { label: 'IVA', value: 'taxTotal' },
+              { label: 'Total', value: 'total' },
+              { label: 'Emision', value: 'issueDate' },
+            ])
+          }
+        >
+          <Download size={17} />
+          Exportar
+        </button>
       </div>
 
       {showForm ? (

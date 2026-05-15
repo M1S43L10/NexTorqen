@@ -1,4 +1,4 @@
-import { AlertTriangle, Edit3, Package, Plus, Search, Trash2, X } from 'lucide-react'
+import { AlertTriangle, Download, Edit3, Package, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import {
   createStockItem,
@@ -6,6 +6,7 @@ import {
   listStockItems,
   updateStockItem,
 } from '../../services/stockService'
+import { exportToCsv } from '../../services/exportService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
 import './StockPage.css'
@@ -223,6 +224,27 @@ export function StockPage() {
             value={query}
           />
         </label>
+        <button
+          className="btn btn-ghost"
+          type="button"
+          onClick={() =>
+            exportToCsv('nextorqen-stock', filteredItems, [
+              { label: 'SKU', value: 'sku' },
+              { label: 'Repuesto', value: 'name' },
+              { label: 'Categoria', value: 'category' },
+              { label: 'Marca', value: 'brand' },
+              { label: 'Proveedor', value: 'supplier' },
+              { label: 'Stock', value: 'stock' },
+              { label: 'Minimo', value: 'minStock' },
+              { label: 'Costo', value: 'cost' },
+              { label: 'Venta', value: 'salePrice' },
+              { label: 'Ubicacion', value: 'location' },
+            ])
+          }
+        >
+          <Download size={17} />
+          Exportar
+        </button>
       </div>
 
       {showForm ? (

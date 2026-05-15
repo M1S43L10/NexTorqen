@@ -1,4 +1,4 @@
-import { Edit3, Mail, MapPin, MessageCircle, Phone, Plus, Search, Trash2, X } from 'lucide-react'
+import { Download, Edit3, Mail, MapPin, MessageCircle, Phone, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -9,6 +9,7 @@ import {
 } from '../../services/clientService'
 import { formatDate } from '../../utils/date'
 import { clientGreetingMessage, openWhatsApp } from '../../services/whatsappService'
+import { exportToCsv } from '../../services/exportService'
 import '../usuarios/UsuariosPage.css'
 import './ClientesPage.css'
 
@@ -189,6 +190,23 @@ export function ClientesPage() {
             value={query}
           />
         </label>
+        <button
+          className="btn btn-ghost"
+          type="button"
+          onClick={() =>
+            exportToCsv('nextorqen-clientes', filteredClients, [
+              { label: 'Nombre', value: 'name' },
+              { label: 'Telefono', value: 'phone' },
+              { label: 'Email', value: 'email' },
+              { label: 'Documento', value: 'document' },
+              { label: 'Direccion', value: 'address' },
+              { label: 'Actualizo', value: (client) => client.updatedByName || client.createdByName || '' },
+            ])
+          }
+        >
+          <Download size={17} />
+          Exportar
+        </button>
       </div>
 
       {showForm ? (

@@ -1,6 +1,7 @@
 import {
   CalendarClock,
   CheckCircle2,
+  Download,
   Edit3,
   FileText,
   MessageCircle,
@@ -20,6 +21,7 @@ import {
 } from '../../services/stockService'
 import { listVehicles } from '../../services/vehicleService'
 import { openWhatsApp, workOrderStatusMessage } from '../../services/whatsappService'
+import { exportToCsv } from '../../services/exportService'
 import {
   createWorkOrder,
   deleteWorkOrder,
@@ -491,6 +493,25 @@ export function OrdenesPage() {
             value={query}
           />
         </label>
+        <button
+          className="btn btn-ghost"
+          type="button"
+          onClick={() =>
+            exportToCsv('nextorqen-ordenes', filteredOrders, [
+              { label: 'Orden', value: 'number' },
+              { label: 'Cliente', value: (order) => clientById.get(order.clientId)?.name || order.clientName || '' },
+              { label: 'Vehiculo', value: 'vehicleLabel' },
+              { label: 'Estado', value: 'status' },
+              { label: 'Prioridad', value: 'priority' },
+              { label: 'Ingreso', value: 'entryDate' },
+              { label: 'Total', value: 'total' },
+              { label: 'Actualizo', value: (order) => order.updatedByName || order.createdByName || '' },
+            ])
+          }
+        >
+          <Download size={17} />
+          Exportar
+        </button>
       </div>
 
       {showForm ? (

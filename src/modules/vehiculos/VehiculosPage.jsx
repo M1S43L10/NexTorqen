@@ -1,4 +1,4 @@
-import { CalendarClock, Car, Edit3, FileText, Gauge, History, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
+import { CalendarClock, Car, Download, Edit3, FileText, Gauge, History, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import { listAppointments } from '../../services/appointmentService'
@@ -11,6 +11,7 @@ import {
   updateVehicle,
 } from '../../services/vehicleService'
 import { listWorkOrders } from '../../services/workOrderService'
+import { exportToCsv } from '../../services/exportService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
 import { VehicleSelector } from './VehicleSelector'
@@ -295,6 +296,25 @@ export function VehiculosPage() {
             value={query}
           />
         </label>
+        <button
+          className="btn btn-ghost"
+          type="button"
+          onClick={() =>
+            exportToCsv('nextorqen-vehiculos', filteredVehicles, [
+              { label: 'Patente', value: 'plate' },
+              { label: 'Marca', value: (vehicle) => vehicle.brand_name || vehicle.brand || '' },
+              { label: 'Modelo', value: (vehicle) => vehicle.model_name || vehicle.model || '' },
+              { label: 'Version', value: (vehicle) => vehicle.version_name || vehicle.version || '' },
+              { label: 'Ano', value: 'year' },
+              { label: 'Cliente', value: (vehicle) => clientById.get(vehicle.clientId)?.name || vehicle.clientName || '' },
+              { label: 'Kilometraje', value: 'mileage' },
+              { label: 'Estado', value: 'status' },
+            ])
+          }
+        >
+          <Download size={17} />
+          Exportar
+        </button>
       </div>
 
       {showForm ? (
