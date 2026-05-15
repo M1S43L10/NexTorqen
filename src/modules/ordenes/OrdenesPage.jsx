@@ -12,6 +12,7 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import { useAuth } from '../../hooks/useAuth'
 import { listClients } from '../../services/clientService'
 import {
@@ -672,7 +673,9 @@ export function OrdenesPage() {
 
       <div className="users-table card">
         {loading ? (
-          <div className="empty-state">Cargando ordenes...</div>
+          <div className="empty-state">
+            <GearLoader label="Cargando órdenes..." />
+          </div>
         ) : filteredOrders.length ? (
           <div className="table-scroll">
             <table>

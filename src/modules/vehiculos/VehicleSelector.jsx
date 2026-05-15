@@ -1,5 +1,6 @@
 import { Database, RefreshCw, Search, Wrench } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import {
   useVehicleBrands,
   useVehicleModels,
@@ -246,8 +247,14 @@ export function VehicleSelector({ value, onChange }) {
               type="button"
               onClick={handleSearch}
             >
-              <Search size={17} />
-              {searchLoading ? 'Buscando...' : 'Buscar'}
+              {searchLoading ? (
+                <GearLoader label="Buscando..." size="compact" tone="inline" />
+              ) : (
+                <>
+                  <Search size={17} />
+                  Buscar
+                </>
+              )}
             </button>
           </div>
 
@@ -284,6 +291,9 @@ export function VehicleSelector({ value, onChange }) {
                   </option>
                 ))}
               </select>
+              {brandsState.loading ? (
+                <GearLoader label="Cargando marcas..." size="compact" tone="inline" />
+              ) : null}
             </label>
 
             <label className="field">
@@ -302,6 +312,9 @@ export function VehicleSelector({ value, onChange }) {
                   </option>
                 ))}
               </select>
+              {modelsState.loading ? (
+                <GearLoader label="Cargando modelos..." size="compact" tone="inline" />
+              ) : null}
             </label>
 
             <label className="field">
@@ -320,6 +333,9 @@ export function VehicleSelector({ value, onChange }) {
                   </option>
                 ))}
               </select>
+              {versionsState.loading ? (
+                <GearLoader label="Cargando versiones..." size="compact" tone="inline" />
+              ) : null}
             </label>
 
             <label className="field">
@@ -338,6 +354,9 @@ export function VehicleSelector({ value, onChange }) {
                   </option>
                 ))}
               </select>
+              {valuationsState.loading ? (
+                <GearLoader label="Cargando valuaciones..." size="compact" tone="inline" />
+              ) : null}
             </label>
           </div>
         </>

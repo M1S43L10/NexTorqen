@@ -1,5 +1,6 @@
 import { CalendarClock, Car, Download, Edit3, FileText, Gauge, History, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import { useAuth } from '../../hooks/useAuth'
 import { listAppointments } from '../../services/appointmentService'
 import { listClients } from '../../services/clientService'
@@ -401,7 +402,9 @@ export function VehiculosPage() {
 
       <div className="users-table card">
         {loading ? (
-          <div className="empty-state">Cargando vehiculos...</div>
+          <div className="empty-state">
+            <GearLoader label="Cargando vehículos..." />
+          </div>
         ) : filteredVehicles.length ? (
           <div className="table-scroll">
             <table>

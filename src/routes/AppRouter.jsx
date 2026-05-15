@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
+import { GearLoader } from '../components/GearLoader'
 import { ProtectedRoute } from './ProtectedRoute'
 
 const lazyNamed = (loader, exportName) =>
@@ -25,7 +26,13 @@ const LandingPage = lazyNamed(() => import('../pages/LandingPage'), 'LandingPage
 export function AppRouter() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div className="route-loader">Cargando módulo...</div>}>
+      <Suspense
+        fallback={
+          <div className="route-loader">
+            <GearLoader label="Cargando módulo..." size="page" tone="inline" />
+          </div>
+        }
+      >
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />

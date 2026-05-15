@@ -1,5 +1,6 @@
 import { Edit3, Eye, EyeOff, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import { createUser, deleteUser, listUsers, updateUser } from '../../services/userService'
 import { formatDate } from '../../utils/date'
 import './UsuariosPage.css'
@@ -230,7 +231,9 @@ export function UsuariosPage() {
 
       <div className="users-table card">
         {loading ? (
-          <div className="empty-state">Cargando usuarios...</div>
+          <div className="empty-state">
+            <GearLoader label="Cargando usuarios..." />
+          </div>
         ) : filteredUsers.length ? (
           <div className="table-scroll">
             <table>

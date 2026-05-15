@@ -1,5 +1,6 @@
 import { AlertTriangle, Download, Edit3, Package, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import {
   createStockItem,
   deleteStockItem,
@@ -362,7 +363,9 @@ export function StockPage() {
 
       <div className="users-table card">
         {loading ? (
-          <div className="empty-state">Cargando repuestos...</div>
+          <div className="empty-state">
+            <GearLoader label="Cargando repuestos..." />
+          </div>
         ) : filteredItems.length ? (
           <div className="table-scroll">
             <table>

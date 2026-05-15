@@ -1,5 +1,6 @@
 import { CreditCard, Download, Edit3, FileText, MessageCircle, Plus, ReceiptText, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import { listClients } from '../../services/clientService'
 import {
   createInvoice,
@@ -506,7 +507,9 @@ export function FacturacionPage() {
 
       <div className="users-table card">
         {loading ? (
-          <div className="empty-state">Cargando facturas...</div>
+          <div className="empty-state">
+            <GearLoader label="Cargando facturas..." />
+          </div>
         ) : filteredInvoices.length ? (
           <div className="table-scroll">
             <table>

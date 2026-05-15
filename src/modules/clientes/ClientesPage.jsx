@@ -1,5 +1,6 @@
 import { Download, Edit3, Mail, MapPin, MessageCircle, Phone, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import { useAuth } from '../../hooks/useAuth'
 import {
   createClient,
@@ -279,7 +280,9 @@ export function ClientesPage() {
 
       <div className="users-table card">
         {loading ? (
-          <div className="empty-state">Cargando clientes...</div>
+          <div className="empty-state">
+            <GearLoader label="Cargando clientes..." />
+          </div>
         ) : filteredClients.length ? (
           <div className="table-scroll">
             <table>

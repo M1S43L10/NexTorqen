@@ -9,6 +9,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import { listAppointments } from '../../services/appointmentService'
 import { listInvoices } from '../../services/invoiceService'
 import { listStockItems } from '../../services/stockService'
@@ -118,7 +119,9 @@ export function ReportesPage() {
       </div>
 
       {loading ? (
-        <div className="card empty-state">Calculando reportes...</div>
+        <div className="card empty-state">
+          <GearLoader label="Calculando reportes..." />
+        </div>
       ) : (
         <>
           <div className="reports-kpi-grid">

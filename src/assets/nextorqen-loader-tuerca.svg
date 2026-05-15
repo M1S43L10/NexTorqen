@@ -1,0 +1,87 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#000000" flood-opacity="0.45"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#FF6B00" flood-opacity="0.25"/>
+    </filter>
+    <linearGradient id="orange" x1="130" y1="120" x2="360" y2="390" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF8F1F"/>
+      <stop offset="0.5" stop-color="#FF6B00"/>
+      <stop offset="1" stop-color="#E24F00"/>
+    </linearGradient>
+    <linearGradient id="metal" x1="100" y1="80" x2="410" y2="430" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#5A5A5A"/>
+      <stop offset="0.35" stop-color="#F5F5F5"/>
+      <stop offset="0.55" stop-color="#1E1E1E"/>
+      <stop offset="1" stop-color="#4A4A4A"/>
+    </linearGradient>
+    <linearGradient id="dark" x1="110" y1="80" x2="410" y2="420" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2C2C2C"/>
+      <stop offset="1" stop-color="#070808"/>
+    </linearGradient>
+
+    <style>
+      .gear-spin {
+        transform-origin: 256px 256px;
+        animation: spin 1.15s linear infinite;
+      }
+      .pulse {
+        transform-origin: 256px 256px;
+        animation: pulse 1.15s ease-in-out infinite;
+      }
+      .ring-spin {
+        transform-origin: 256px 256px;
+        animation: spinReverse 1.8s linear infinite;
+      }
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes spinReverse {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: .55; transform: scale(.96); }
+        50% { opacity: 1; transform: scale(1.04); }
+      }
+    </style>
+  </defs>
+
+  <rect width="512" height="512" fill="transparent"/>
+
+  <g class="gear-spin" filter="url(#shadow)">
+    <g fill="#2C2C2C" stroke="#111" stroke-width="6" stroke-linejoin="round">
+      <rect x="229" y="20" width="54" height="82" rx="10"/>
+      <rect x="229" y="410" width="54" height="82" rx="10"/>
+      <rect x="20" y="229" width="82" height="54" rx="10"/>
+      <rect x="410" y="229" width="82" height="54" rx="10"/>
+      <rect x="74" y="74" width="58" height="78" rx="9" transform="rotate(-45 103 113)"/>
+      <rect x="380" y="360" width="58" height="78" rx="9" transform="rotate(-45 409 399)"/>
+      <rect x="360" y="74" width="58" height="78" rx="9" transform="rotate(45 389 113)"/>
+      <rect x="54" y="360" width="58" height="78" rx="9" transform="rotate(45 83 399)"/>
+    </g>
+
+    <circle cx="256" cy="256" r="178" fill="url(#dark)" stroke="url(#metal)" stroke-width="26"/>
+    <circle cx="256" cy="256" r="130" fill="#070808" stroke="#F5F5F5" stroke-width="12" opacity="0.98"/>
+  </g>
+
+  <g class="ring-spin">
+    <path d="M126 256C126 184.2 184.2 126 256 126" stroke="#F5F5F5" stroke-width="16" stroke-linecap="round" opacity="0.95"/>
+    <path d="M386 256C386 327.8 327.8 386 256 386" stroke="#FF6B00" stroke-width="16" stroke-linecap="round" opacity="0.95"/>
+  </g>
+
+  <g class="pulse">
+    <circle cx="256" cy="256" r="100" stroke="#FF6B00" stroke-width="6" opacity="0.6"/>
+    <circle cx="256" cy="256" r="88" stroke="#F5F5F5" stroke-width="3" opacity="0.35"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <path d="M147 367L191 140H258L284 270L354 140H430L357 247L420 367H345L312 293L275 367H221L199 227L172 367H147Z"
+          fill="url(#orange)" stroke="#F5F5F5" stroke-width="14" stroke-linejoin="round"/>
+    <path d="M354 135C388 121 423 128 446 153L405 183L447 213C420 238 384 241 353 223L312 293L277 270L354 135Z"
+          fill="url(#orange)" stroke="#F5F5F5" stroke-width="14" stroke-linejoin="round"/>
+    <path d="M207 156L241 156L263 300" stroke="#FF8F1F" stroke-width="6" stroke-linecap="round" opacity="0.45"/>
+    <path d="M366 157L333 217" stroke="#FFB45C" stroke-width="7" stroke-linecap="round" opacity="0.45"/>
+  </g>
+</svg>

@@ -1,5 +1,6 @@
 import { CalendarClock, CheckCircle2, Clock, Download, Edit3, MessageCircle, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { GearLoader } from '../../components/GearLoader'
 import { useAuth } from '../../hooks/useAuth'
 import {
   createAppointment,
@@ -521,7 +522,9 @@ export function TurnosPage() {
 
       <div className="users-table card">
         {loading ? (
-          <div className="empty-state">Cargando turnos...</div>
+          <div className="empty-state">
+            <GearLoader label="Cargando turnos..." />
+          </div>
         ) : filteredAppointments.length ? (
           <div className="table-scroll">
             <table>

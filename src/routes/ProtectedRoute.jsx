@@ -1,11 +1,16 @@
 import { Navigate, Outlet } from 'react-router-dom'
+import { GearLoader } from '../components/GearLoader'
 import { useAuth } from '../hooks/useAuth'
 
 export function ProtectedRoute({ roles }) {
   const { loading, user } = useAuth()
 
   if (loading) {
-    return <div className="route-loader">Inicializando sesión...</div>
+    return (
+      <div className="route-loader">
+        <GearLoader label="Inicializando sesión..." size="page" tone="inline" />
+      </div>
+    )
   }
 
   if (!user) {
