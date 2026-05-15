@@ -515,6 +515,7 @@ export function TurnosPage() {
                   <th>Estado</th>
                   <th>Responsable</th>
                   <th>Motivo</th>
+                  <th>Actualizo</th>
                   <th>Creacion</th>
                   <th>Acciones</th>
                 </tr>
@@ -541,6 +542,7 @@ export function TurnosPage() {
                         {appointment.workOrderNumber ? <code>{appointment.workOrderNumber}</code> : null}
                       </div>
                     </td>
+                    <td>{appointment.updatedByName || appointment.createdByName || '-'}</td>
                     <td>{formatDate(appointment.createdAt)}</td>
                     <td>
                       <div className="table-actions">

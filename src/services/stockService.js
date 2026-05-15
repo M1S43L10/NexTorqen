@@ -10,6 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from '../firebase/config'
+import { createAuditFields, updateAuditFields } from './auditService'
 import {
   createLocalRecord,
   deleteLocalRecord,
@@ -39,28 +40,30 @@ export async function listStockItems() {
 }
 
 export async function createStockItem(data) {
+  const payload = { ...data, ...createAuditFields() }
   if (!isFirebaseConfigured) {
-    return createLocalRecord(LOCAL_STOCK_KEY, data)
+    return createLocalRecord(LOCAL_STOCK_KEY, payload)
   }
 
   const docRef = await addDoc(collection(db, STOCK_COLLECTION), {
-    ...data,
+    ...payload,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
-  return { id: docRef.id, ...data }
+  return { id: docRef.id, ...payload }
 }
 
 export async function updateStockItem(id, data) {
+  const payload = { ...data, ...updateAuditFields() }
   if (!isFirebaseConfigured) {
-    return updateLocalRecord(LOCAL_STOCK_KEY, id, data)
+    return updateLocalRecord(LOCAL_STOCK_KEY, id, payload)
   }
 
   await updateDoc(doc(db, STOCK_COLLECTION, id), {
-    ...data,
+    ...payload,
     updatedAt: serverTimestamp(),
   })
-  return { id, ...data }
+  return { id, ...payload }
 }
 
 export async function deleteStockItem(id) {
@@ -111,6 +114,7 @@ export async function applyStockMovements(previousParts = [], nextParts = []) {
       return {
         ...item,
         stock: toNumber(item.stock) + previousQuantity - nextQuantity,
+        ...updateAuditFields(),
         updatedAt: new Date().toISOString(),
       }
     })
@@ -126,6 +130,7 @@ export async function applyStockMovements(previousParts = [], nextParts = []) {
         const nextQuantity = next[item.id] || 0
         return updateDoc(doc(db, STOCK_COLLECTION, item.id), {
           stock: toNumber(item.stock) + previousQuantity - nextQuantity,
+          ...updateAuditFields(),
           updatedAt: serverTimestamp(),
         })
       }),

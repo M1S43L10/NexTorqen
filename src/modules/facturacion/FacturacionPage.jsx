@@ -498,6 +498,7 @@ export function FacturacionPage() {
                   <th>Pago</th>
                   <th>Total</th>
                   <th>Emision</th>
+                  <th>Actualizo</th>
                   <th>Creacion</th>
                   <th>Acciones</th>
                 </tr>
@@ -519,6 +520,7 @@ export function FacturacionPage() {
                     <td>{invoice.paymentMethod}</td>
                     <td>{formatCurrency(invoice.total)}</td>
                     <td>{invoice.issueDate || '-'}</td>
+                    <td>{invoice.updatedByName || invoice.createdByName || '-'}</td>
                     <td>{formatDate(invoice.createdAt)}</td>
                     <td>
                       <div className="table-actions">

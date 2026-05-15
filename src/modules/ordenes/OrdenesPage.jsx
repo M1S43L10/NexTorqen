@@ -664,6 +664,7 @@ export function OrdenesPage() {
                   <th>Prioridad</th>
                   <th>Ingreso</th>
                   <th>Total</th>
+                  <th>Actualizo</th>
                   <th>Creacion</th>
                   <th>Acciones</th>
                 </tr>
@@ -684,6 +685,7 @@ export function OrdenesPage() {
                     <td>{order.priority}</td>
                     <td>{order.entryDate || '-'}</td>
                     <td>{formatCurrency(order.total)}</td>
+                    <td>{order.updatedByName || order.createdByName || '-'}</td>
                     <td>{formatDate(order.createdAt)}</td>
                     <td>
                       <div className="table-actions">

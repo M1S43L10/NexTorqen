@@ -394,6 +394,7 @@ export function VehiculosPage() {
                   <th>Kilometraje</th>
                   <th>Valuacion</th>
                   <th>Estado</th>
+                  <th>Actualizo</th>
                   <th>Creacion</th>
                   <th>Acciones</th>
                 </tr>
@@ -414,6 +415,7 @@ export function VehiculosPage() {
                         {vehicle.status}
                       </span>
                     </td>
+                    <td>{vehicle.updatedByName || vehicle.createdByName || '-'}</td>
                     <td>{formatDate(vehicle.createdAt)}</td>
                     <td>
                       <div className="table-actions">

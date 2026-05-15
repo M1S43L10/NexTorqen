@@ -272,6 +272,7 @@ export function ClientesPage() {
                   <th>Email</th>
                   <th>Documento</th>
                   <th>Direccion</th>
+                  <th>Actualizo</th>
                   <th>Creacion</th>
                   <th>Acciones</th>
                 </tr>
@@ -284,6 +285,7 @@ export function ClientesPage() {
                     <td>{client.email || '-'}</td>
                     <td>{client.document || '-'}</td>
                     <td>{client.address || '-'}</td>
+                    <td>{client.updatedByName || client.createdByName || '-'}</td>
                     <td>{formatDate(client.createdAt)}</td>
                     <td>
                       <div className="table-actions">

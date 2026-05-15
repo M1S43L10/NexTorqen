@@ -10,6 +10,7 @@ import {
   updateDoc,
 } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from '../firebase/config'
+import { createAuditFields, updateAuditFields } from './auditService'
 import {
   createLocalRecord,
   deleteLocalRecord,
@@ -38,28 +39,30 @@ export async function listAppointments() {
 }
 
 export async function createAppointment(data) {
+  const payload = { ...data, ...createAuditFields() }
   if (!isFirebaseConfigured) {
-    return createLocalRecord(LOCAL_APPOINTMENTS_KEY, data)
+    return createLocalRecord(LOCAL_APPOINTMENTS_KEY, payload)
   }
 
   const docRef = await addDoc(collection(db, APPOINTMENTS_COLLECTION), {
-    ...data,
+    ...payload,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   })
-  return { id: docRef.id, ...data }
+  return { id: docRef.id, ...payload }
 }
 
 export async function updateAppointment(id, data) {
+  const payload = { ...data, ...updateAuditFields() }
   if (!isFirebaseConfigured) {
-    return updateLocalRecord(LOCAL_APPOINTMENTS_KEY, id, data)
+    return updateLocalRecord(LOCAL_APPOINTMENTS_KEY, id, payload)
   }
 
   await updateDoc(doc(db, APPOINTMENTS_COLLECTION, id), {
-    ...data,
+    ...payload,
     updatedAt: serverTimestamp(),
   })
-  return { id, ...data }
+  return { id, ...payload }
 }
 
 export async function deleteAppointment(id) {

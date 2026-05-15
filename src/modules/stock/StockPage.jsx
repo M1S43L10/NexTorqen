@@ -355,6 +355,7 @@ export function StockPage() {
                   <th>Venta</th>
                   <th>Ubicacion</th>
                   <th>Estado</th>
+                  <th>Actualizo</th>
                   <th>Creacion</th>
                   <th>Acciones</th>
                 </tr>
@@ -379,6 +380,7 @@ export function StockPage() {
                           {lowStock ? 'Bajo minimo' : 'Disponible'}
                         </span>
                       </td>
+                      <td>{item.updatedByName || item.createdByName || '-'}</td>
                       <td>{formatDate(item.createdAt)}</td>
                       <td>
                         <div className="table-actions">
