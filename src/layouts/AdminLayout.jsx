@@ -29,12 +29,11 @@ const mainNav = [
   { to: '/app/stock', label: 'Stock', icon: Package },
   { to: '/app/facturacion', label: 'Facturacion', icon: FileText },
   { to: '/app/turnos', label: 'Turnos', icon: CalendarClock },
+  { to: '/app/reportes', label: 'Reportes', icon: BarChart3 },
   { to: '/app/usuarios', label: 'Usuarios', icon: Users },
 ]
 
-const futureNav = [
-  { label: 'Reportes', icon: BarChart3 },
-]
+const futureNav = []
 
 export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -77,15 +76,17 @@ export function AdminLayout() {
           ))}
         </nav>
 
-        <div className="sidebar-section">
-          <span>Preparado para escalar</span>
-          {futureNav.map((item) => (
-            <div className="sidebar-link disabled" key={item.label}>
-              <item.icon size={18} />
-              {item.label}
-            </div>
-          ))}
-        </div>
+        {futureNav.length ? (
+          <div className="sidebar-section">
+            <span>Preparado para escalar</span>
+            {futureNav.map((item) => (
+              <div className="sidebar-link disabled" key={item.label}>
+                <item.icon size={18} />
+                {item.label}
+              </div>
+            ))}
+          </div>
+        ) : null}
       </aside>
 
       <div className="admin-main">

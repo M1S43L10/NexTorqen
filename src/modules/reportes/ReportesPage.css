@@ -1,0 +1,152 @@
+.reportes-page {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.reports-kpi-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.report-kpi {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem;
+}
+
+.report-kpi svg,
+.report-panel-title svg {
+  color: var(--primary);
+}
+
+.report-kpi span,
+.report-split span {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.report-kpi strong {
+  font-size: 1.45rem;
+  line-height: 1.15;
+}
+
+.reports-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.report-panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.report-panel-title {
+  align-items: center;
+  display: flex;
+  gap: 0.6rem;
+}
+
+.report-panel-title h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.status-bars {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.status-bars span {
+  align-items: center;
+  color: var(--text-muted);
+  display: flex;
+  font-size: 0.84rem;
+  font-weight: 850;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.status-bars div div {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.status-bars i {
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  display: block;
+  height: 100%;
+}
+
+.report-list {
+  align-content: start;
+}
+
+.report-list-row {
+  align-items: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: 1fr 1fr auto;
+  padding: 0.75rem;
+}
+
+.report-list-row span {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.report-list-row b {
+  color: var(--primary);
+}
+
+.report-empty {
+  color: var(--text-muted);
+  font-weight: 800;
+  padding: 1rem 0;
+}
+
+.report-split {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.report-split div {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.report-split strong {
+  display: block;
+  font-size: 2rem;
+  line-height: 1;
+  margin-top: 0.35rem;
+}
+
+@media (max-width: 1080px) {
+  .reports-kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .reports-grid,
+  .reports-kpi-grid,
+  .report-split,
+  .report-list-row {
+    grid-template-columns: 1fr;
+  }
+}
