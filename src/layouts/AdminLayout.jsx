@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  BookOpen,
   Building2,
   CalendarClock,
   Car,
@@ -29,6 +30,7 @@ const mainNav = [
   { to: '/app/stock', label: 'Stock', icon: Package, roles: ['admin'] },
   { to: '/app/facturacion', label: 'Facturacion', icon: FileText, roles: ['admin'] },
   { to: '/app/turnos', label: 'Turnos', icon: CalendarClock },
+  { to: '/app/ayuda', label: 'Ayuda', icon: BookOpen },
   { to: '/app/reportes', label: 'Reportes', icon: BarChart3, roles: ['admin'] },
   { to: '/app/usuarios', label: 'Usuarios', icon: Users, roles: ['admin'] },
 ]

@@ -1,0 +1,148 @@
+.ayuda-page {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.help-flow,
+.help-card,
+.status-guide {
+  padding: 1rem;
+}
+
+.flow-steps {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.flow-steps div {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.8rem;
+}
+
+.flow-steps span {
+  align-items: center;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  border-radius: 999px;
+  color: white;
+  display: inline-flex;
+  font-size: 0.8rem;
+  font-weight: 950;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.help-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.help-grid-small {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.help-card {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.help-card-title {
+  align-items: center;
+  display: flex;
+  gap: 0.55rem;
+}
+
+.help-card-title svg,
+.status-guide svg {
+  color: var(--primary);
+}
+
+.help-card-title h2 {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.help-card-title span {
+  background: rgba(255, 107, 0, 0.14);
+  border-radius: 999px;
+  color: var(--primary);
+  font-size: 0.72rem;
+  font-weight: 950;
+  margin-left: auto;
+  padding: 0.3rem 0.55rem;
+  text-transform: uppercase;
+}
+
+.help-card p {
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.help-card ul {
+  color: var(--text);
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.help-card li {
+  line-height: 1.45;
+}
+
+.status-guide-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.status-guide-grid > div {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 0.7rem;
+  padding: 0.85rem;
+}
+
+.status-guide-grid div div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.status-guide-grid span {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 850;
+  padding: 0.35rem 0.55rem;
+}
+
+@media (max-width: 1100px) {
+  .flow-steps,
+  .help-grid,
+  .status-guide-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .flow-steps,
+  .help-grid,
+  .help-grid-small,
+  .status-guide-grid {
+    grid-template-columns: 1fr;
+  }
+}

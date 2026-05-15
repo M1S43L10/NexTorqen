@@ -6,6 +6,7 @@ const lazyNamed = (loader, exportName) =>
   lazy(() => loader().then((module) => ({ default: module[exportName] })))
 
 const AdminLayout = lazyNamed(() => import('../layouts/AdminLayout'), 'AdminLayout')
+const AyudaPage = lazyNamed(() => import('../modules/ayuda/AyudaPage'), 'AyudaPage')
 const LoginPage = lazyNamed(() => import('../modules/auth/LoginPage'), 'LoginPage')
 const ClientesPage = lazyNamed(() => import('../modules/clientes/ClientesPage'), 'ClientesPage')
 const DashboardPage = lazyNamed(() => import('../modules/dashboard/DashboardPage'), 'DashboardPage')
@@ -35,6 +36,7 @@ export function AppRouter() {
               <Route path="vehiculos" element={<VehiculosPage />} />
               <Route path="ordenes" element={<OrdenesPage />} />
               <Route path="turnos" element={<TurnosPage />} />
+              <Route path="ayuda" element={<AyudaPage />} />
               <Route element={<ProtectedRoute roles={['admin']} />}>
                 <Route path="stock" element={<StockPage />} />
                 <Route path="facturacion" element={<FacturacionPage />} />
