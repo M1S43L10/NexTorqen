@@ -313,6 +313,103 @@ a {
   padding: 0;
 }
 
+.notification-shell {
+  position: relative;
+}
+
+.notification-button {
+  position: relative;
+}
+
+.notification-button > span {
+  align-items: center;
+  background: var(--primary);
+  border: 2px solid var(--bg);
+  border-radius: 999px;
+  color: #ffffff;
+  display: flex;
+  font-size: 0.68rem;
+  font-weight: 950;
+  height: 20px;
+  justify-content: center;
+  min-width: 20px;
+  position: absolute;
+  right: -0.35rem;
+  top: -0.35rem;
+}
+
+.notification-popover {
+  display: grid;
+  gap: 0.75rem;
+  max-height: min(460px, calc(100svh - 6rem));
+  overflow: hidden;
+  padding: 0.85rem;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.65rem);
+  width: min(360px, 88vw);
+  z-index: 40;
+}
+
+.notification-popover-header {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.notification-popover-header .btn {
+  min-height: 34px;
+  padding: 0.45rem 0.65rem;
+}
+
+.notification-list {
+  display: grid;
+  gap: 0.45rem;
+  overflow-y: auto;
+  padding-right: 0.1rem;
+}
+
+.notification-item {
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  display: grid;
+  gap: 0.24rem;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.notification-item strong {
+  font-size: 0.9rem;
+}
+
+.notification-item span,
+.notification-item small,
+.notification-empty {
+  color: var(--text-muted);
+}
+
+.notification-item span {
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.notification-item small {
+  font-size: 0.74rem;
+}
+
+.notification-unread {
+  border-color: rgba(255, 107, 0, 0.42);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.notification-empty {
+  padding: 1rem;
+  text-align: center;
+}
+
 @media (max-width: 760px) {
   .btn {
     min-height: 40px;

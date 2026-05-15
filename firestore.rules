@@ -31,6 +31,15 @@ service cloud.firestore {
     // appointments/{appointmentId}
     //   Schedule records linked to clientId and vehicleId.
     //
+    // workAssignments/{assignmentId}
+    //   Internal work tasks assigned to employees. Includes title,
+    //   assignedToUid, assigned employee display fields, optional order link,
+    //   priority, status and dueDate.
+    //
+    // notifications/{notificationId}
+    //   Internal notifications delivered to a single recipientUid. Includes
+    //   title, message, type, read flag and optional assignmentId.
+    //
     // ===============================================================
     // Helper Functions
     // ===============================================================
@@ -169,6 +178,81 @@ service cloud.firestore {
         validString('reason', 500);
     }
 
+    function validAssignmentStatus(value) {
+      return value in ['Pendiente', 'En proceso', 'Completada', 'Cancelada'];
+    }
+
+    function validAssignmentPriority(value) {
+      return value in ['Baja', 'Normal', 'Alta', 'Urgente'];
+    }
+
+    function validWorkAssignment() {
+      return hasRequiredFields(['title', 'assignedToUid', 'assignedToName', 'priority', 'status']) &&
+        validString('title', 180) &&
+        validString('description', 2000) &&
+        validString('assignedToId', 120) &&
+        validString('assignedToUid', 120) &&
+        validString('assignedToName', 160) &&
+        validString('assignedToEmail', 180) &&
+        validString('orderId', 120) &&
+        validString('orderNumber', 80) &&
+        validString('dueDate', 20) &&
+        validAssignmentPriority(request.resource.data.priority) &&
+        validAssignmentStatus(request.resource.data.status);
+    }
+
+    function validNotification() {
+      return hasRequiredFields(['recipientUid', 'title', 'message', 'type', 'read']) &&
+        validString('recipientId', 120) &&
+        validString('recipientUid', 120) &&
+        validString('recipientEmail', 180) &&
+        validString('title', 180) &&
+        validString('message', 500) &&
+        validString('type', 80) &&
+        validString('assignmentId', 120) &&
+        validBool('read');
+    }
+
+    function assignmentOwnedBySignedInUser() {
+      return isAuthenticated() && resource.data.assignedToUid == request.auth.uid;
+    }
+
+    function assignmentOwnershipUnchanged() {
+      return request.resource.data.assignedToUid == resource.data.assignedToUid &&
+        request.resource.data.assignedToId == resource.data.assignedToId &&
+        request.resource.data.assignedToEmail == resource.data.assignedToEmail;
+    }
+
+    function employeeAssignmentStatusUpdate() {
+      return assignmentOwnedBySignedInUser() &&
+        assignmentOwnershipUnchanged() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'status',
+          'updatedAt',
+          'updatedBy',
+          'updatedByName',
+          'updatedByEmail'
+        ]) &&
+        validWorkAssignment();
+    }
+
+    function notificationOwnedBySignedInUser() {
+      return isAuthenticated() && resource.data.recipientUid == request.auth.uid;
+    }
+
+    function recipientUnchanged() {
+      return request.resource.data.recipientUid == resource.data.recipientUid &&
+        request.resource.data.recipientId == resource.data.recipientId &&
+        request.resource.data.recipientEmail == resource.data.recipientEmail;
+    }
+
+    function recipientMarkReadUpdate() {
+      return notificationOwnedBySignedInUser() &&
+        recipientUnchanged() &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'updatedAt']) &&
+        validNotification();
+    }
+
     match /users/{userId} {
       allow get: if isAdmin() ||
         (isAuthenticated() &&
@@ -215,6 +299,22 @@ service cloud.firestore {
     match /appointments/{appointmentId} {
       allow read: if isStaff();
       allow create, update: if isStaff() && validAppointment();
+      allow delete: if isAdmin();
+    }
+
+    match /workAssignments/{assignmentId} {
+      allow get: if isAdmin() || assignmentOwnedBySignedInUser();
+      allow list: if isStaff();
+      allow create: if isAdmin() && validWorkAssignment();
+      allow update: if isAdmin() && validWorkAssignment() || employeeAssignmentStatusUpdate();
+      allow delete: if isAdmin();
+    }
+
+    match /notifications/{notificationId} {
+      allow get: if isAdmin() || notificationOwnedBySignedInUser();
+      allow list: if isStaff();
+      allow create: if isAdmin() && validNotification();
+      allow update: if recipientMarkReadUpdate();
       allow delete: if isAdmin();
     }
 

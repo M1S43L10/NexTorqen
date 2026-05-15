@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  BriefcaseBusiness,
   CalendarClock,
   Car,
   ClipboardList,
@@ -36,6 +37,12 @@ const modules = [
     icon: ClipboardList,
     purpose: 'Controla el trabajo tecnico del taller, servicios, repuestos, estados y totales.',
     uses: ['Agregar servicios y repuestos.', 'Descontar stock si el repuesto viene del inventario.', 'Avisar estado por WhatsApp.'],
+  },
+  {
+    title: 'Trabajos',
+    icon: BriefcaseBusiness,
+    purpose: 'Asigna tareas concretas a empleados y notifica al responsable dentro del panel.',
+    uses: ['Vincular una tarea a una orden.', 'Definir prioridad y fecha limite.', 'Permitir que el empleado actualice el estado.'],
   },
   {
     title: 'Stock',
@@ -82,7 +89,7 @@ export function AyudaPage() {
           <h2>Flujo recomendado del taller</h2>
         </div>
         <div className="flow-steps">
-          {['Cliente', 'Vehiculo', 'Turno', 'Orden', 'Stock', 'Factura', 'Reporte'].map((step, index) => (
+          {['Cliente', 'Vehiculo', 'Turno', 'Orden', 'Trabajo', 'Stock', 'Factura', 'Reporte'].map((step, index) => (
             <div key={step}>
               <span>{index + 1}</span>
               <strong>{step}</strong>

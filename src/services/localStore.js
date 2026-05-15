@@ -8,6 +8,8 @@ const WORK_ORDERS_KEY = 'nextorqen:work-orders'
 const STOCK_ITEMS_KEY = 'nextorqen:stock-items'
 const INVOICES_KEY = 'nextorqen:invoices'
 const APPOINTMENTS_KEY = 'nextorqen:appointments'
+const WORK_ASSIGNMENTS_KEY = 'nextorqen:work-assignments'
+const NOTIFICATIONS_KEY = 'nextorqen:notifications'
 
 const nowIso = () => new Date().toISOString()
 
@@ -104,7 +106,9 @@ export const LOCAL_COLLECTION_KEYS = {
   appointments: APPOINTMENTS_KEY,
   clients: CLIENTS_KEY,
   invoices: INVOICES_KEY,
+  notifications: NOTIFICATIONS_KEY,
   stockItems: STOCK_ITEMS_KEY,
   vehicles: VEHICLES_KEY,
+  workAssignments: WORK_ASSIGNMENTS_KEY,
   workOrders: WORK_ORDERS_KEY,
 }

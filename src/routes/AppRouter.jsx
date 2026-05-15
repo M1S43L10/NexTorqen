@@ -18,6 +18,7 @@ const FacturacionPage = lazyNamed(
 const OrdenesPage = lazyNamed(() => import('../modules/ordenes/OrdenesPage'), 'OrdenesPage')
 const ReportesPage = lazyNamed(() => import('../modules/reportes/ReportesPage'), 'ReportesPage')
 const StockPage = lazyNamed(() => import('../modules/stock/StockPage'), 'StockPage')
+const TrabajosPage = lazyNamed(() => import('../modules/trabajos/TrabajosPage'), 'TrabajosPage')
 const TurnosPage = lazyNamed(() => import('../modules/turnos/TurnosPage'), 'TurnosPage')
 const UsuariosPage = lazyNamed(() => import('../modules/usuarios/UsuariosPage'), 'UsuariosPage')
 const VehiculosPage = lazyNamed(() => import('../modules/vehiculos/VehiculosPage'), 'VehiculosPage')
@@ -42,6 +43,7 @@ export function AppRouter() {
               <Route path="clientes" element={<ClientesPage />} />
               <Route path="vehiculos" element={<VehiculosPage />} />
               <Route path="ordenes" element={<OrdenesPage />} />
+              <Route path="trabajos" element={<TrabajosPage />} />
               <Route path="turnos" element={<TurnosPage />} />
               <Route path="ayuda" element={<AyudaPage />} />
               <Route element={<ProtectedRoute roles={['admin']} />}>

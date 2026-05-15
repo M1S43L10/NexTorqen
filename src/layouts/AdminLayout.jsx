@@ -1,6 +1,7 @@
 import {
   BarChart3,
   BookOpen,
+  BriefcaseBusiness,
   Building2,
   CalendarClock,
   Car,
@@ -20,11 +21,13 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useTheme } from '../hooks/useTheme'
 import nextorqenLogo from '../assets/nextorqen-logo.svg'
+import { NotificationBell } from '../components/NotificationBell'
 import './AdminLayout.css'
 
 const mainNav = [
   { to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true },
   { to: '/app/ordenes', label: 'Ordenes', icon: Wrench },
+  { to: '/app/trabajos', label: 'Trabajos', icon: BriefcaseBusiness },
   { to: '/app/clientes', label: 'Clientes', icon: Building2 },
   { to: '/app/vehiculos', label: 'Vehiculos', icon: Car },
   { to: '/app/stock', label: 'Stock', icon: Package, roles: ['admin'] },
@@ -117,6 +120,7 @@ export function AdminLayout() {
             >
               {theme === 'dark' ? <Sun size={19} /> : <Moon size={19} />}
             </button>
+            <NotificationBell />
             <div className="user-chip">
               <span>{user?.name?.slice(0, 1) || 'U'}</span>
               <div>
