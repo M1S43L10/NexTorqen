@@ -128,6 +128,10 @@ a {
   border-color: rgba(255, 107, 0, 0.46);
 }
 
+.icon-button.whatsapp-action {
+  color: #22c55e;
+}
+
 .card {
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent),

@@ -1,4 +1,4 @@
-import { Edit3, Mail, MapPin, Phone, Plus, Search, Trash2, X } from 'lucide-react'
+import { Edit3, Mail, MapPin, MessageCircle, Phone, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -8,6 +8,7 @@ import {
   updateClient,
 } from '../../services/clientService'
 import { formatDate } from '../../utils/date'
+import { clientGreetingMessage, openWhatsApp } from '../../services/whatsappService'
 import '../usuarios/UsuariosPage.css'
 import './ClientesPage.css'
 
@@ -288,6 +289,14 @@ export function ClientesPage() {
                       <div className="table-actions">
                         <button className="icon-button" type="button" onClick={() => openEdit(client)} aria-label="Editar">
                           <Edit3 size={17} />
+                        </button>
+                        <button
+                          className="icon-button whatsapp-action"
+                          type="button"
+                          onClick={() => openWhatsApp(client.phone, clientGreetingMessage(client))}
+                          aria-label="Enviar WhatsApp"
+                        >
+                          <MessageCircle size={17} />
                         </button>
                         {isAdmin ? (
                           <button className="icon-button danger" type="button" onClick={() => handleDelete(client)} aria-label="Eliminar">

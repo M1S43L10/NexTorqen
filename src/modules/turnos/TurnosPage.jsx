@@ -1,4 +1,4 @@
-import { CalendarClock, CheckCircle2, Clock, Edit3, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
+import { CalendarClock, CheckCircle2, Clock, Edit3, MessageCircle, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -9,6 +9,7 @@ import {
 } from '../../services/appointmentService'
 import { listClients } from '../../services/clientService'
 import { listVehicles } from '../../services/vehicleService'
+import { appointmentCancelledMessage, appointmentReminderMessage, openWhatsApp } from '../../services/whatsappService'
 import { createWorkOrder, listWorkOrders } from '../../services/workOrderService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
@@ -307,6 +308,15 @@ export function TurnosPage() {
     }
   }
 
+  const handleSendAppointmentMessage = (appointment) => {
+    const client = clientById.get(appointment.clientId)
+    const message =
+      appointment.status === 'Cancelado'
+        ? appointmentCancelledMessage(appointment)
+        : appointmentReminderMessage(appointment)
+    openWhatsApp(client?.phone, message)
+  }
+
   return (
     <section className="usuarios-page turnos-page">
       <div className="usuarios-header">
@@ -536,6 +546,14 @@ export function TurnosPage() {
                       <div className="table-actions">
                         <button className="icon-button" type="button" onClick={() => openEdit(appointment)} aria-label="Editar">
                           <Edit3 size={17} />
+                        </button>
+                        <button
+                          className="icon-button whatsapp-action"
+                          type="button"
+                          onClick={() => handleSendAppointmentMessage(appointment)}
+                          aria-label="Enviar WhatsApp"
+                        >
+                          <MessageCircle size={17} />
                         </button>
                         {!appointment.workOrderId && !['Completado', 'Cancelado'].includes(appointment.status) ? (
                           <button className="icon-button order-action" type="button" onClick={() => handleCreateOrder(appointment)} aria-label="Crear orden">

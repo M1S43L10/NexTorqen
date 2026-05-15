@@ -3,6 +3,7 @@ import {
   CheckCircle2,
   Edit3,
   FileText,
+  MessageCircle,
   Plus,
   Search,
   Trash2,
@@ -18,6 +19,7 @@ import {
   validateStockAvailability,
 } from '../../services/stockService'
 import { listVehicles } from '../../services/vehicleService'
+import { openWhatsApp, workOrderStatusMessage } from '../../services/whatsappService'
 import {
   createWorkOrder,
   deleteWorkOrder,
@@ -359,6 +361,11 @@ export function OrdenesPage() {
     await loadData()
   }
 
+  const handleSendOrderMessage = (order) => {
+    const client = clientById.get(order.clientId)
+    openWhatsApp(client?.phone, workOrderStatusMessage(order))
+  }
+
   const renderItems = (type, title) => (
     <div className="order-items">
       <div className="order-items-title">
@@ -682,6 +689,14 @@ export function OrdenesPage() {
                       <div className="table-actions">
                         <button className="icon-button" type="button" onClick={() => openEdit(order)} aria-label="Editar">
                           <Edit3 size={17} />
+                        </button>
+                        <button
+                          className="icon-button whatsapp-action"
+                          type="button"
+                          onClick={() => handleSendOrderMessage(order)}
+                          aria-label="Enviar WhatsApp"
+                        >
+                          <MessageCircle size={17} />
                         </button>
                         {isAdmin ? (
                           <button className="icon-button danger" type="button" onClick={() => handleDelete(order)} aria-label="Eliminar">

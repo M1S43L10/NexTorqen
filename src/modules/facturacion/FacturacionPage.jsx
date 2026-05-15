@@ -1,5 +1,6 @@
-import { CreditCard, Edit3, FileText, Plus, ReceiptText, Search, Trash2, X } from 'lucide-react'
+import { CreditCard, Edit3, FileText, MessageCircle, Plus, ReceiptText, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { listClients } from '../../services/clientService'
 import {
   createInvoice,
   deleteInvoice,
@@ -7,6 +8,7 @@ import {
   updateInvoice,
 } from '../../services/invoiceService'
 import { listWorkOrders } from '../../services/workOrderService'
+import { invoiceMessage, openWhatsApp } from '../../services/whatsappService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
 import './FacturacionPage.css'
@@ -56,6 +58,7 @@ const buildInvoiceItems = (order) => [
 
 export function FacturacionPage() {
   const [invoices, setInvoices] = useState([])
+  const [clients, setClients] = useState([])
   const [orders, setOrders] = useState([])
   const [query, setQuery] = useState('')
   const [form, setForm] = useState(createEmptyForm)
@@ -95,19 +98,25 @@ export function FacturacionPage() {
 
   const loadData = async (withLoading = true) => {
     if (withLoading) setLoading(true)
-    const [invoicesResult, ordersResult] = await Promise.all([listInvoices(), listWorkOrders()])
+    const [invoicesResult, ordersResult, clientsResult] = await Promise.all([
+      listInvoices(),
+      listWorkOrders(),
+      listClients(),
+    ])
     setInvoices(invoicesResult)
     setOrders(ordersResult)
+    setClients(clientsResult)
     if (withLoading) setLoading(false)
   }
 
   useEffect(() => {
     let active = true
 
-    Promise.all([listInvoices(), listWorkOrders()]).then(([invoicesResult, ordersResult]) => {
+    Promise.all([listInvoices(), listWorkOrders(), listClients()]).then(([invoicesResult, ordersResult, clientsResult]) => {
       if (!active) return
       setInvoices(invoicesResult)
       setOrders(ordersResult)
+      setClients(clientsResult)
       setLoading(false)
     })
 
@@ -262,6 +271,11 @@ export function FacturacionPage() {
 
     await deleteInvoice(invoice.id)
     await loadData()
+  }
+
+  const handleSendInvoiceMessage = (invoice) => {
+    const client = clients.find((item) => item.id === invoice.clientId)
+    openWhatsApp(client?.phone, invoiceMessage(invoice))
   }
 
   return (
@@ -510,6 +524,14 @@ export function FacturacionPage() {
                       <div className="table-actions">
                         <button className="icon-button" type="button" onClick={() => openEdit(invoice)} aria-label="Editar">
                           <Edit3 size={17} />
+                        </button>
+                        <button
+                          className="icon-button whatsapp-action"
+                          type="button"
+                          onClick={() => handleSendInvoiceMessage(invoice)}
+                          aria-label="Enviar WhatsApp"
+                        >
+                          <MessageCircle size={17} />
                         </button>
                         <button className="icon-button danger" type="button" onClick={() => handleDelete(invoice)} aria-label="Eliminar">
                           <Trash2 size={17} />
