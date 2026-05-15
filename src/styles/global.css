@@ -203,6 +203,16 @@ a {
   text-align: center;
 }
 
+.route-loader {
+  align-items: center;
+  background: var(--bg);
+  color: var(--text-muted);
+  display: flex;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 100svh;
+}
+
 @media (max-width: 760px) {
   .btn {
     min-height: 40px;
