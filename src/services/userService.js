@@ -1,5 +1,6 @@
+import { deleteApp, initializeApp } from 'firebase/app'
+import { createUserWithEmailAndPassword, getAuth } from 'firebase/auth'
 import {
-  addDoc,
   collection,
   deleteDoc,
   getDoc,
@@ -12,7 +13,7 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore'
-import { db, isFirebaseConfigured } from '../firebase/config'
+import { db, firebaseConfig, isFirebaseConfigured } from '../firebase/config'
 import { DEFAULT_ADMIN } from '../utils/defaultAdmin'
 import { getLocalUsers, saveLocalUsers } from './localStore'
 
@@ -23,6 +24,22 @@ const mapFirestoreUser = (snapshot) => ({
   id: snapshot.id,
   ...snapshot.data(),
 })
+
+async function createFirebaseAuthUser(data) {
+  const secondaryApp = initializeApp(firebaseConfig, `user-create-${crypto.randomUUID()}`)
+  const secondaryAuth = getAuth(secondaryApp)
+
+  try {
+    const credential = await createUserWithEmailAndPassword(
+      secondaryAuth,
+      data.email,
+      data.authPassword || data.password,
+    )
+    return credential.user.uid
+  } finally {
+    await deleteApp(secondaryApp)
+  }
+}
 
 export async function ensureDefaultAdmin() {
   if (!isFirebaseConfigured) {
@@ -87,13 +104,16 @@ export async function createUser(data) {
     return user
   }
 
-  const docRef = await addDoc(collection(db, USERS_COLLECTION), {
+  const uid = await createFirebaseAuthUser(data)
+  const docRef = doc(db, USERS_COLLECTION, uid)
+  await setDoc(docRef, {
     ...data,
+    uid,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     authProvider: 'firestore-dev-profile',
   })
-  return { id: docRef.id, ...data }
+  return { id: docRef.id, uid, ...data }
 }
 
 export async function updateUser(id, data) {
@@ -142,6 +162,20 @@ export async function findUserProfileByEmail(email) {
 
   const result = await getDocs(
     query(collection(db, USERS_COLLECTION), where('email', '==', email)),
+  )
+  return result.empty ? null : mapFirestoreUser(result.docs[0])
+}
+
+export async function findUserProfileByUid(uid) {
+  if (!isFirebaseConfigured) {
+    return getLocalUsers().find((user) => user.uid === uid || user.id === uid)
+  }
+
+  const directSnapshot = await getDoc(doc(db, USERS_COLLECTION, uid))
+  if (directSnapshot.exists()) return mapFirestoreUser(directSnapshot)
+
+  const result = await getDocs(
+    query(collection(db, USERS_COLLECTION), where('uid', '==', uid)),
   )
   return result.empty ? null : mapFirestoreUser(result.docs[0])
 }

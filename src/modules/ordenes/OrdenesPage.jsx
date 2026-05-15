@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from '../../hooks/useAuth'
 import { listClients } from '../../services/clientService'
 import {
   applyStockMovements,
@@ -73,6 +74,7 @@ const normalizeItems = (items) =>
     }))
 
 export function OrdenesPage() {
+  const { isAdmin } = useAuth()
   const [orders, setOrders] = useState([])
   const [clients, setClients] = useState([])
   const [stockItems, setStockItems] = useState([])
@@ -681,9 +683,11 @@ export function OrdenesPage() {
                         <button className="icon-button" type="button" onClick={() => openEdit(order)} aria-label="Editar">
                           <Edit3 size={17} />
                         </button>
-                        <button className="icon-button danger" type="button" onClick={() => handleDelete(order)} aria-label="Eliminar">
-                          <Trash2 size={17} />
-                        </button>
+                        {isAdmin ? (
+                          <button className="icon-button danger" type="button" onClick={() => handleDelete(order)} aria-label="Eliminar">
+                            <Trash2 size={17} />
+                          </button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>

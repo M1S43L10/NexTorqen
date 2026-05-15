@@ -1,5 +1,6 @@
 import { Car, Edit3, Gauge, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from '../../hooks/useAuth'
 import { listClients } from '../../services/clientService'
 import {
   createVehicle,
@@ -43,6 +44,7 @@ const formatCurrency = (value, currency = 'ARS') => {
 }
 
 export function VehiculosPage() {
+  const { isAdmin } = useAuth()
   const [vehicles, setVehicles] = useState([])
   const [clients, setClients] = useState([])
   const [query, setQuery] = useState('')
@@ -379,9 +381,11 @@ export function VehiculosPage() {
                         <button className="icon-button" type="button" onClick={() => openEdit(vehicle)} aria-label="Editar">
                           <Edit3 size={17} />
                         </button>
-                        <button className="icon-button danger" type="button" onClick={() => handleDelete(vehicle)} aria-label="Eliminar">
-                          <Trash2 size={17} />
-                        </button>
+                        {isAdmin ? (
+                          <button className="icon-button danger" type="button" onClick={() => handleDelete(vehicle)} aria-label="Eliminar">
+                            <Trash2 size={17} />
+                          </button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>

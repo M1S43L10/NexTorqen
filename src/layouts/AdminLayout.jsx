@@ -26,11 +26,11 @@ const mainNav = [
   { to: '/app/ordenes', label: 'Ordenes', icon: Wrench },
   { to: '/app/clientes', label: 'Clientes', icon: Building2 },
   { to: '/app/vehiculos', label: 'Vehiculos', icon: Car },
-  { to: '/app/stock', label: 'Stock', icon: Package },
-  { to: '/app/facturacion', label: 'Facturacion', icon: FileText },
+  { to: '/app/stock', label: 'Stock', icon: Package, roles: ['admin'] },
+  { to: '/app/facturacion', label: 'Facturacion', icon: FileText, roles: ['admin'] },
   { to: '/app/turnos', label: 'Turnos', icon: CalendarClock },
-  { to: '/app/reportes', label: 'Reportes', icon: BarChart3 },
-  { to: '/app/usuarios', label: 'Usuarios', icon: Users },
+  { to: '/app/reportes', label: 'Reportes', icon: BarChart3, roles: ['admin'] },
+  { to: '/app/usuarios', label: 'Usuarios', icon: Users, roles: ['admin'] },
 ]
 
 const futureNav = []
@@ -62,7 +62,9 @@ export function AdminLayout() {
         </div>
 
         <nav className="sidebar-nav" aria-label="Navegación principal">
-          {mainNav.map((item) => (
+          {mainNav
+            .filter((item) => !item.roles || item.roles.includes(user?.role))
+            .map((item) => (
             <NavLink
               className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
               end={item.end}

@@ -17,8 +17,7 @@ import {
 import {
   ensureDefaultAdmin,
   findUserProfileByEmail,
-  findUserProfileByUsername,
-  getDefaultAdminProfile,
+  findUserProfileByUid,
   upsertUserProfile,
 } from './userService'
 
@@ -74,7 +73,9 @@ export async function bootstrapAuth() {
         return
       }
 
-      const profile = await findUserProfileByEmail(firebaseUser.email)
+      const profile =
+        (await findUserProfileByUid(firebaseUser.uid)) ||
+        (await findUserProfileByEmail(firebaseUser.email))
       resolve(publicUser({ ...firebaseUser, ...profile }))
     })
   })
@@ -95,15 +96,12 @@ export async function login(identifier, password) {
     normalizedIdentifier === DEFAULT_ADMIN.username ||
     normalizedIdentifier === DEFAULT_ADMIN.email.toLowerCase()
 
-  let profileByUsername = isDefaultAdminLogin
-    ? await getDefaultAdminProfile()
-    : await withTimeout(
-        findUserProfileByUsername(identifier),
-        'No se pudo consultar el perfil del usuario en Firestore.',
-      )
+  let profileByUsername = null
 
-  if (isDefaultAdminLogin && !profileByUsername) {
+  if (isDefaultAdminLogin) {
     profileByUsername = DEFAULT_ADMIN
+  } else if (!normalizedIdentifier.includes('@')) {
+    throw new Error('En Firebase, los empleados deben ingresar con email.')
   }
 
   const email = profileByUsername?.email || identifier
@@ -117,9 +115,19 @@ export async function login(identifier, password) {
     const profile =
       profileByUsername ||
       (await withTimeout(
-        findUserProfileByEmail(credential.user.email),
+        findUserProfileByUid(credential.user.uid).then(
+          (uidProfile) => uidProfile || findUserProfileByEmail(credential.user.email),
+        ),
         'No se pudo cargar el perfil del usuario.',
       ))
+
+    if (isDefaultAdminLogin) {
+      await upsertUserProfile(credential.user.uid, {
+        ...DEFAULT_ADMIN,
+        uid: credential.user.uid,
+        source: 'seed',
+      })
+    }
 
     return publicUser({ ...credential.user, ...profile })
   } catch (error) {

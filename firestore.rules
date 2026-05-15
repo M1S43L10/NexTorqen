@@ -1,18 +1,237 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // users/{userId}
+    //   Profile for Firebase Auth users. Expected fields include:
+    //   uid, name, username, email, role ("admin" | "empleado"),
+    //   password/authPassword development fields, createdAt, updatedAt.
+    //
+    // clients/{clientId}
+    //   Customer records: name, phone, email, document, address, notes.
+    //
+    // vehicles/{vehicleId}
+    //   Vehicle records linked to clients: clientId, plate, brand/model/version,
+    //   year, mileage, status, source and Arg Autos metadata.
+    //
+    // workOrders/{orderId}
+    //   Workshop orders linked to clientId and vehicleId. Includes services,
+    //   parts, status, priority, totals and diagnosis fields.
+    //
+    // stockItems/{stockItemId}
+    //   Inventory items: sku, name, category, stock, minStock, cost, salePrice.
+    //
+    // invoices/{invoiceId}
+    //   Billing records generated from work orders.
+    //
+    // appointments/{appointmentId}
+    //   Schedule records linked to clientId and vehicleId.
+    //
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function signedInEmail() {
+      return request.auth.token.email;
+    }
+
+    function isInitialAdminEmail() {
+      return isAuthenticated() && signedInEmail() == 'misaelr893@nextorqen.local';
+    }
+
+    function userPath(userId) {
+      return /databases/$(database)/documents/users/$(userId);
+    }
+
+    function hasUserProfile() {
+      return isAuthenticated() && exists(userPath(request.auth.uid));
+    }
+
+    function role() {
+      return hasUserProfile() ? get(userPath(request.auth.uid)).data.role : null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (role() == 'admin' || isInitialAdminEmail());
+    }
+
+    function isEmployee() {
+      return isAuthenticated() && role() == 'empleado';
+    }
+
+    function isStaff() {
+      return isAdmin() || isEmployee();
+    }
+
+    function validRole(value) {
+      return value in ['admin', 'empleado'];
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function validString(field, maxLen) {
+      return !(field in request.resource.data) ||
+        request.resource.data[field] is string &&
+        request.resource.data[field].size() <= maxLen;
+    }
+
+    function validNumber(field) {
+      return !(field in request.resource.data) || request.resource.data[field] is number;
+    }
+
+    function validBool(field) {
+      return !(field in request.resource.data) || request.resource.data[field] is bool;
+    }
+
+    function validList(field, maxLen) {
+      return !(field in request.resource.data) ||
+        request.resource.data[field] is list &&
+        request.resource.data[field].size() <= maxLen;
+    }
+
+    function validUserProfile() {
+      return hasRequiredFields(['name', 'username', 'email', 'role']) &&
+        validRole(request.resource.data.role) &&
+        validString('name', 120) &&
+        validString('username', 80) &&
+        validString('email', 160);
+    }
+
+    function validClient() {
+      return hasRequiredFields(['name', 'phone']) &&
+        validString('name', 160) &&
+        validString('phone', 60) &&
+        validString('email', 160) &&
+        validString('document', 80) &&
+        validString('address', 220) &&
+        validString('notes', 1000);
+    }
+
+    function validVehicle() {
+      return hasRequiredFields(['plate', 'clientId', 'brand_name', 'model_name', 'status']) &&
+        validString('plate', 40) &&
+        validString('clientId', 120) &&
+        validString('brand_name', 120) &&
+        validString('model_name', 140) &&
+        validString('status', 80) &&
+        validString('notes', 1000);
+    }
+
+    function validWorkOrder() {
+      return hasRequiredFields(['number', 'clientId', 'vehicleId', 'status', 'total']) &&
+        validString('number', 60) &&
+        validString('clientId', 120) &&
+        validString('vehicleId', 120) &&
+        validString('status', 80) &&
+        validNumber('total') &&
+        validList('services', 80) &&
+        validList('parts', 120);
+    }
+
+    function validStockItem() {
+      return hasRequiredFields(['name', 'stock', 'minStock', 'cost', 'salePrice', 'active']) &&
+        validString('sku', 80) &&
+        validString('name', 180) &&
+        validString('category', 120) &&
+        validNumber('stock') &&
+        validNumber('minStock') &&
+        validNumber('cost') &&
+        validNumber('salePrice') &&
+        validBool('active');
+    }
+
+    function validInvoice() {
+      return hasRequiredFields(['number', 'workOrderId', 'status', 'subtotal', 'total']) &&
+        validString('number', 80) &&
+        validString('workOrderId', 120) &&
+        validString('status', 80) &&
+        validNumber('subtotal') &&
+        validNumber('total') &&
+        validList('items', 200);
+    }
+
+    function validAppointment() {
+      return hasRequiredFields(['clientId', 'vehicleId', 'date', 'time', 'status', 'reason']) &&
+        validString('clientId', 120) &&
+        validString('vehicleId', 120) &&
+        validString('date', 20) &&
+        validString('time', 20) &&
+        validString('status', 80) &&
+        validString('reason', 500);
+    }
+
+    match /users/{userId} {
+      allow get: if isAdmin() ||
+        (isAuthenticated() &&
+          (userId == request.auth.uid ||
+            resource.data.uid == request.auth.uid ||
+            resource.data.email == signedInEmail()));
+      allow list: if isAdmin() ||
+        (isAuthenticated() &&
+          (resource.data.uid == request.auth.uid || resource.data.email == signedInEmail()));
+      allow create: if isAdmin() && validUserProfile() ||
+        (isAuthenticated() &&
+          userId == request.auth.uid &&
+          request.resource.data.email == signedInEmail() &&
+          validUserProfile() &&
+          (request.resource.data.role == 'empleado' ||
+            (request.resource.data.role == 'admin' && isInitialAdminEmail())));
+      allow update: if isAdmin() && validUserProfile() ||
+        (isAuthenticated() &&
+          userId == request.auth.uid &&
+          request.resource.data.email == resource.data.email &&
+          request.resource.data.role == resource.data.role &&
+          validUserProfile());
+      allow delete: if isAdmin() && userId != request.auth.uid;
+    }
+
+    match /clients/{clientId} {
+      allow read: if isStaff();
+      allow create, update: if isStaff() && validClient();
+      allow delete: if isAdmin();
+    }
+
+    match /vehicles/{vehicleId} {
+      allow read: if isStaff();
+      allow create, update: if isStaff() && validVehicle();
+      allow delete: if isAdmin();
+    }
+
+    match /workOrders/{orderId} {
+      allow read: if isStaff();
+      allow create, update: if isStaff() && validWorkOrder();
+      allow delete: if isAdmin();
+    }
+
+    match /appointments/{appointmentId} {
+      allow read: if isStaff();
+      allow create, update: if isStaff() && validAppointment();
+      allow delete: if isAdmin();
+    }
+
+    match /stockItems/{stockItemId} {
+      allow read: if isStaff();
+      allow create, update: if isAdmin() && validStockItem();
+      allow delete: if isAdmin();
+    }
+
+    match /invoices/{invoiceId} {
+      allow read: if isStaff();
+      allow create, update: if isAdmin() && validInvoice();
+      allow delete: if isAdmin();
+    }
+
     match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2026, 6, 12);
+      allow read, write: if false;
     }
   }
 }

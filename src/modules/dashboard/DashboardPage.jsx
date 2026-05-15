@@ -1,5 +1,16 @@
-import { Activity, CalendarClock, Car, ClipboardList, UserRound, Users, Wrench } from 'lucide-react'
+import {
+  Activity,
+  AlertTriangle,
+  CalendarClock,
+  Car,
+  ClipboardList,
+  CreditCard,
+  UserRound,
+  Users,
+  Wrench,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { useAuth } from '../../hooks/useAuth'
 import { listAppointments } from '../../services/appointmentService'
 import { listClients } from '../../services/clientService'
 import { listInvoices } from '../../services/invoiceService'
@@ -9,67 +20,98 @@ import { listVehicles } from '../../services/vehicleService'
 import { listWorkOrders } from '../../services/workOrderService'
 import './DashboardPage.css'
 
-const placeholderStats = [
-  { label: 'Servicios realizados', value: '0', icon: Wrench, tone: 'green' },
-]
+const toNumber = (value) => Number(value) || 0
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits: 0,
+  }).format(value || 0)
+
+const todayIso = () => new Date().toISOString().slice(0, 10)
 
 export function DashboardPage() {
+  const { isAdmin } = useAuth()
   const [statsData, setStatsData] = useState({
     users: 0,
     clients: 0,
     vehicles: 0,
     orders: 0,
+    openOrders: 0,
     stockItems: 0,
+    lowStock: 0,
     invoices: 0,
+    pendingInvoicesTotal: 0,
+    paidInvoicesTotal: 0,
     appointments: 0,
+    todayAppointments: 0,
   })
 
   useEffect(() => {
     let active = true
 
+    const adminRequests = isAdmin
+      ? [listUsers(), listStockItems(), listInvoices()]
+      : [Promise.resolve([]), Promise.resolve([]), Promise.resolve([])]
+
     Promise.all([
-      listUsers(),
       listClients(),
       listVehicles(),
       listWorkOrders(),
-      listStockItems(),
-      listInvoices(),
       listAppointments(),
-    ]).then(([users, clients, vehicles, orders, stockItems, invoices, appointments]) => {
+      ...adminRequests,
+    ]).then(([clients, vehicles, orders, appointments, users, stockItems, invoices]) => {
         if (!active) return
         setStatsData({
           users: users.length,
           clients: clients.length,
           vehicles: vehicles.length,
           orders: orders.length,
+          openOrders: orders.filter((order) => ['Pendiente', 'En proceso'].includes(order.status)).length,
           stockItems: stockItems.length,
+          lowStock: stockItems.filter((item) => toNumber(item.stock) <= toNumber(item.minStock)).length,
           invoices: invoices.length,
+          pendingInvoicesTotal: invoices
+            .filter((invoice) => ['Borrador', 'Emitida'].includes(invoice.status))
+            .reduce((total, invoice) => total + toNumber(invoice.total), 0),
+          paidInvoicesTotal: invoices
+            .filter((invoice) => invoice.status === 'Pagada')
+            .reduce((total, invoice) => total + toNumber(invoice.total), 0),
           appointments: appointments.length,
+          todayAppointments: appointments.filter((appointment) => appointment.date === todayIso()).length,
         })
       })
 
     return () => {
       active = false
     }
-  }, [])
+  }, [isAdmin])
 
-  const stats = [
-    { label: 'Usuarios registrados', value: statsData.users, icon: Users, tone: 'blue' },
+  const employeeStats = [
     { label: 'Clientes activos', value: statsData.clients, icon: UserRound, tone: 'green' },
     { label: 'Vehiculos', value: statsData.vehicles, icon: Car, tone: 'blue' },
-    { label: 'Ordenes', value: statsData.orders, icon: ClipboardList, tone: 'amber' },
-    { label: 'Repuestos', value: statsData.stockItems, icon: Wrench, tone: 'green' },
-    { label: 'Facturas', value: statsData.invoices, icon: ClipboardList, tone: 'amber' },
-    { label: 'Turnos', value: statsData.appointments, icon: CalendarClock, tone: 'blue' },
-    ...placeholderStats,
+    { label: 'Ordenes abiertas', value: statsData.openOrders, icon: ClipboardList, tone: 'amber' },
+    { label: 'Turnos hoy', value: statsData.todayAppointments, icon: CalendarClock, tone: 'blue' },
   ]
+
+  const adminStats = [
+    { label: 'Usuarios registrados', value: statsData.users, icon: Users, tone: 'blue' },
+    { label: 'Facturas', value: statsData.invoices, icon: ClipboardList, tone: 'amber' },
+    { label: 'Cobrado', value: formatCurrency(statsData.paidInvoicesTotal), icon: CreditCard, tone: 'green' },
+    { label: 'Pendiente', value: formatCurrency(statsData.pendingInvoicesTotal), icon: AlertTriangle, tone: 'amber' },
+    { label: 'Repuestos', value: statsData.stockItems, icon: Wrench, tone: 'green' },
+    { label: 'Stock bajo', value: statsData.lowStock, icon: AlertTriangle, tone: 'amber' },
+  ]
+
+  const stats = isAdmin ? [...employeeStats, ...adminStats] : employeeStats
 
   return (
     <section className="dashboard-page">
       <div className="page-heading">
         <span>Resumen general</span>
         <h1>Dashboard</h1>
-        <p>Indicadores iniciales para controlar usuarios, clientes, vehiculos, ordenes y servicios.</p>
+        <p>Indicadores reales para controlar agenda, ordenes, facturacion y operacion diaria.</p>
       </div>
 
       <div className="stats-grid">
@@ -95,24 +137,24 @@ export function DashboardPage() {
           <div className="timeline">
             <div>
               <span />
-              <strong>Base del sistema</strong>
-              <p>Autenticacion, roles, rutas protegidas y gestion de usuarios activa.</p>
+              <strong>Permisos por rol</strong>
+              <p>Administradores gestionan datos sensibles; empleados operan clientes, vehiculos, turnos y ordenes.</p>
             </div>
             <div>
               <span />
-              <strong>Clientes y vehiculos</strong>
-              <p>Ya podes cargar clientes y vincular unidades para preparar ordenes de trabajo.</p>
+              <strong>Operacion diaria</strong>
+              <p>Turnos, vehiculos y ordenes abiertas muestran la carga real del taller.</p>
             </div>
             <div>
               <span />
-              <strong>Escalado</strong>
-              <p>Ordenes, stock, turnos, facturacion y reportes quedan como modulos separados.</p>
+              <strong>Gestion comercial</strong>
+              <p>Stock, facturacion y reportes quedan reservados para administracion.</p>
             </div>
           </div>
         </article>
 
         <article className="card next-modules-card">
-          <h2>Modulos futuros</h2>
+          <h2>Modulos activos</h2>
           <div className="module-tags">
             {[
               'Ordenes',

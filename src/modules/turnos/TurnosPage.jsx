@@ -1,5 +1,6 @@
 import { CalendarClock, CheckCircle2, Clock, Edit3, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from '../../hooks/useAuth'
 import {
   createAppointment,
   deleteAppointment,
@@ -38,6 +39,7 @@ const typeOptions = [
 const todayIso = () => new Date().toISOString().slice(0, 10)
 
 export function TurnosPage() {
+  const { isAdmin } = useAuth()
   const [appointments, setAppointments] = useState([])
   const [clients, setClients] = useState([])
   const [vehicles, setVehicles] = useState([])
@@ -474,9 +476,11 @@ export function TurnosPage() {
                         <button className="icon-button" type="button" onClick={() => openEdit(appointment)} aria-label="Editar">
                           <Edit3 size={17} />
                         </button>
-                        <button className="icon-button danger" type="button" onClick={() => handleDelete(appointment)} aria-label="Eliminar">
-                          <Trash2 size={17} />
-                        </button>
+                        {isAdmin ? (
+                          <button className="icon-button danger" type="button" onClick={() => handleDelete(appointment)} aria-label="Eliminar">
+                            <Trash2 size={17} />
+                          </button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>

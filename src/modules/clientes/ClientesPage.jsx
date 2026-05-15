@@ -1,5 +1,6 @@
 import { Edit3, Mail, MapPin, Phone, Plus, Search, Trash2, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
+import { useAuth } from '../../hooks/useAuth'
 import {
   createClient,
   deleteClient,
@@ -20,6 +21,7 @@ const emptyForm = {
 }
 
 export function ClientesPage() {
+  const { isAdmin } = useAuth()
   const [clients, setClients] = useState([])
   const [query, setQuery] = useState('')
   const [form, setForm] = useState(emptyForm)
@@ -287,9 +289,11 @@ export function ClientesPage() {
                         <button className="icon-button" type="button" onClick={() => openEdit(client)} aria-label="Editar">
                           <Edit3 size={17} />
                         </button>
-                        <button className="icon-button danger" type="button" onClick={() => handleDelete(client)} aria-label="Eliminar">
-                          <Trash2 size={17} />
-                        </button>
+                        {isAdmin ? (
+                          <button className="icon-button danger" type="button" onClick={() => handleDelete(client)} aria-label="Eliminar">
+                            <Trash2 size={17} />
+                          </button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>

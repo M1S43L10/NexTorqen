@@ -25,11 +25,13 @@ export function AppRouter() {
             <Route path="clientes" element={<ClientesPage />} />
             <Route path="vehiculos" element={<VehiculosPage />} />
             <Route path="ordenes" element={<OrdenesPage />} />
-            <Route path="stock" element={<StockPage />} />
-            <Route path="facturacion" element={<FacturacionPage />} />
             <Route path="turnos" element={<TurnosPage />} />
-            <Route path="reportes" element={<ReportesPage />} />
-            <Route path="usuarios" element={<UsuariosPage />} />
+            <Route element={<ProtectedRoute roles={['admin']} />}>
+              <Route path="stock" element={<StockPage />} />
+              <Route path="facturacion" element={<FacturacionPage />} />
+              <Route path="reportes" element={<ReportesPage />} />
+              <Route path="usuarios" element={<UsuariosPage />} />
+            </Route>
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
