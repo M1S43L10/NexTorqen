@@ -70,6 +70,20 @@
   color: var(--danger);
 }
 
+.order-action {
+  color: var(--primary);
+}
+
+.appointment-reason {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.appointment-reason code {
+  color: var(--primary);
+  min-width: 0;
+}
+
 @media (max-width: 860px) {
   .turnos-summary {
     grid-template-columns: 1fr;

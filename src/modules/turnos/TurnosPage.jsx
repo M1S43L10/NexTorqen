@@ -1,4 +1,4 @@
-import { CalendarClock, CheckCircle2, Clock, Edit3, Plus, Search, Trash2, X } from 'lucide-react'
+import { CalendarClock, CheckCircle2, Clock, Edit3, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
 import {
@@ -9,6 +9,7 @@ import {
 } from '../../services/appointmentService'
 import { listClients } from '../../services/clientService'
 import { listVehicles } from '../../services/vehicleService'
+import { createWorkOrder, listWorkOrders } from '../../services/workOrderService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
 import './TurnosPage.css'
@@ -42,6 +43,7 @@ export function TurnosPage() {
   const { isAdmin } = useAuth()
   const [appointments, setAppointments] = useState([])
   const [clients, setClients] = useState([])
+  const [orders, setOrders] = useState([])
   const [vehicles, setVehicles] = useState([])
   const [query, setQuery] = useState('')
   const [form, setForm] = useState(createEmptyForm)
@@ -68,26 +70,29 @@ export function TurnosPage() {
 
   const loadData = async (withLoading = true) => {
     if (withLoading) setLoading(true)
-    const [appointmentsResult, clientsResult, vehiclesResult] = await Promise.all([
+    const [appointmentsResult, clientsResult, vehiclesResult, ordersResult] = await Promise.all([
       listAppointments(),
       listClients(),
       listVehicles(),
+      listWorkOrders(),
     ])
     setAppointments(appointmentsResult)
     setClients(clientsResult)
     setVehicles(vehiclesResult)
+    setOrders(ordersResult)
     if (withLoading) setLoading(false)
   }
 
   useEffect(() => {
     let active = true
 
-    Promise.all([listAppointments(), listClients(), listVehicles()]).then(
-      ([appointmentsResult, clientsResult, vehiclesResult]) => {
+    Promise.all([listAppointments(), listClients(), listVehicles(), listWorkOrders()]).then(
+      ([appointmentsResult, clientsResult, vehiclesResult, ordersResult]) => {
         if (!active) return
         setAppointments(appointmentsResult)
         setClients(clientsResult)
         setVehicles(vehiclesResult)
+        setOrders(ordersResult)
         setLoading(false)
       },
     )
@@ -249,6 +254,57 @@ export function TurnosPage() {
 
     await deleteAppointment(appointment.id)
     await loadData()
+  }
+
+  const handleCreateOrder = async (appointment) => {
+    if (appointment.workOrderId) return
+
+    const confirmed = window.confirm(`Crear orden de trabajo para el turno de ${appointment.clientName}?`)
+    if (!confirmed) return
+
+    const nextNumber = `OT-${String(orders.length + 1).padStart(5, '0')}`
+    const payload = {
+      number: nextNumber,
+      clientId: appointment.clientId,
+      clientName: appointment.clientName || '',
+      vehicleId: appointment.vehicleId,
+      vehicleLabel: appointment.vehicleLabel || '',
+      status: 'Pendiente',
+      priority: 'Normal',
+      entryDate: appointment.date,
+      promisedDate: '',
+      failureDescription: appointment.reason,
+      diagnosis: '',
+      services: [
+        {
+          description: appointment.type || appointment.reason,
+          quantity: 1,
+          price: 0,
+          subtotal: 0,
+          stockItemId: '',
+          sku: '',
+        },
+      ],
+      parts: [],
+      servicesTotal: 0,
+      partsTotal: 0,
+      total: 0,
+      notes: appointment.notes || '',
+      sourceAppointmentId: appointment.id,
+    }
+
+    try {
+      const order = await createWorkOrder(payload)
+      await updateAppointment(appointment.id, {
+        ...appointment,
+        status: 'En taller',
+        workOrderId: order.id,
+        workOrderNumber: order.number,
+      })
+      await loadData()
+    } catch (conversionError) {
+      setError(conversionError.message)
+    }
   }
 
   return (
@@ -469,13 +525,23 @@ export function TurnosPage() {
                       </span>
                     </td>
                     <td>{appointment.assignedTo || '-'}</td>
-                    <td>{appointment.reason}</td>
+                    <td>
+                      <div className="appointment-reason">
+                        <span>{appointment.reason}</span>
+                        {appointment.workOrderNumber ? <code>{appointment.workOrderNumber}</code> : null}
+                      </div>
+                    </td>
                     <td>{formatDate(appointment.createdAt)}</td>
                     <td>
                       <div className="table-actions">
                         <button className="icon-button" type="button" onClick={() => openEdit(appointment)} aria-label="Editar">
                           <Edit3 size={17} />
                         </button>
+                        {!appointment.workOrderId && !['Completado', 'Cancelado'].includes(appointment.status) ? (
+                          <button className="icon-button order-action" type="button" onClick={() => handleCreateOrder(appointment)} aria-label="Crear orden">
+                            <Wrench size={17} />
+                          </button>
+                        ) : null}
                         {isAdmin ? (
                           <button className="icon-button danger" type="button" onClick={() => handleDelete(appointment)} aria-label="Eliminar">
                             <Trash2 size={17} />
