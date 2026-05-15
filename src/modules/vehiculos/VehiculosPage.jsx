@@ -1,13 +1,16 @@
-import { Car, Edit3, Gauge, Plus, Search, Trash2, X } from 'lucide-react'
+import { CalendarClock, Car, Edit3, FileText, Gauge, History, Plus, Search, Trash2, Wrench, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../../hooks/useAuth'
+import { listAppointments } from '../../services/appointmentService'
 import { listClients } from '../../services/clientService'
+import { listInvoices } from '../../services/invoiceService'
 import {
   createVehicle,
   deleteVehicle,
   listVehicles,
   updateVehicle,
 } from '../../services/vehicleService'
+import { listWorkOrders } from '../../services/workOrderService'
 import { formatDate } from '../../utils/date'
 import '../usuarios/UsuariosPage.css'
 import { VehicleSelector } from './VehicleSelector'
@@ -47,8 +50,12 @@ export function VehiculosPage() {
   const { isAdmin } = useAuth()
   const [vehicles, setVehicles] = useState([])
   const [clients, setClients] = useState([])
+  const [appointments, setAppointments] = useState([])
+  const [invoices, setInvoices] = useState([])
+  const [orders, setOrders] = useState([])
   const [query, setQuery] = useState('')
   const [form, setForm] = useState(emptyForm)
+  const [selectedHistoryVehicle, setSelectedHistoryVehicle] = useState(null)
   const [editingId, setEditingId] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -62,21 +69,35 @@ export function VehiculosPage() {
 
   const loadData = async (withLoading = true) => {
     if (withLoading) setLoading(true)
-    const [vehiclesResult, clientsResult] = await Promise.all([listVehicles(), listClients()])
+    const [vehiclesResult, clientsResult, ordersResult, invoicesResult, appointmentsResult] = await Promise.all([
+      listVehicles(),
+      listClients(),
+      listWorkOrders(),
+      listInvoices(),
+      listAppointments(),
+    ])
     setVehicles(vehiclesResult)
     setClients(clientsResult)
+    setOrders(ordersResult)
+    setInvoices(invoicesResult)
+    setAppointments(appointmentsResult)
     if (withLoading) setLoading(false)
   }
 
   useEffect(() => {
     let active = true
 
-    Promise.all([listVehicles(), listClients()]).then(([vehiclesResult, clientsResult]) => {
-      if (!active) return
-      setVehicles(vehiclesResult)
-      setClients(clientsResult)
-      setLoading(false)
-    })
+    Promise.all([listVehicles(), listClients(), listWorkOrders(), listInvoices(), listAppointments()]).then(
+      ([vehiclesResult, clientsResult, ordersResult, invoicesResult, appointmentsResult]) => {
+        if (!active) return
+        setVehicles(vehiclesResult)
+        setClients(clientsResult)
+        setOrders(ordersResult)
+        setInvoices(invoicesResult)
+        setAppointments(appointmentsResult)
+        setLoading(false)
+      },
+    )
 
     return () => {
       active = false
@@ -104,6 +125,23 @@ export function VehiculosPage() {
       )
     })
   }, [clientById, query, vehicles])
+
+  const selectedVehicleHistory = useMemo(() => {
+    if (!selectedHistoryVehicle) return null
+
+    const vehicleOrders = orders.filter((order) => order.vehicleId === selectedHistoryVehicle.id)
+    const vehicleInvoices = invoices.filter((invoice) => invoice.vehicleId === selectedHistoryVehicle.id)
+    const vehicleAppointments = appointments.filter(
+      (appointment) => appointment.vehicleId === selectedHistoryVehicle.id,
+    )
+
+    return {
+      appointments: vehicleAppointments,
+      invoices: vehicleInvoices,
+      orders: vehicleOrders,
+      totalBilled: vehicleInvoices.reduce((total, invoice) => total + (Number(invoice.total) || 0), 0),
+    }
+  }, [appointments, invoices, orders, selectedHistoryVehicle])
 
   const resetForm = () => {
     setForm(emptyForm)
@@ -200,6 +238,7 @@ export function VehiculosPage() {
         await createVehicle(payload)
       }
       await loadData()
+      setSelectedHistoryVehicle(null)
       resetForm()
     } catch (saveError) {
       setError(saveError.message)
@@ -381,6 +420,14 @@ export function VehiculosPage() {
                         <button className="icon-button" type="button" onClick={() => openEdit(vehicle)} aria-label="Editar">
                           <Edit3 size={17} />
                         </button>
+                        <button
+                          className="icon-button history-action"
+                          type="button"
+                          onClick={() => setSelectedHistoryVehicle(vehicle)}
+                          aria-label="Ver historial"
+                        >
+                          <History size={17} />
+                        </button>
                         {isAdmin ? (
                           <button className="icon-button danger" type="button" onClick={() => handleDelete(vehicle)} aria-label="Eliminar">
                             <Trash2 size={17} />
@@ -397,6 +444,87 @@ export function VehiculosPage() {
           <div className="empty-state">No hay vehiculos cargados todavia.</div>
         )}
       </div>
+
+      {selectedHistoryVehicle && selectedVehicleHistory ? (
+        <section className="vehicle-history card">
+          <div className="form-title">
+            <div>
+              <h2>Historial de {selectedHistoryVehicle.plate}</h2>
+              <p>
+                {`${selectedHistoryVehicle.brand_name || selectedHistoryVehicle.brand} ${
+                  selectedHistoryVehicle.model_name || selectedHistoryVehicle.model
+                }`}
+              </p>
+            </div>
+            <button className="icon-button" type="button" onClick={() => setSelectedHistoryVehicle(null)} aria-label="Cerrar historial">
+              <X size={18} />
+            </button>
+          </div>
+
+          <div className="history-summary">
+            <article>
+              <Wrench size={18} />
+              <strong>{selectedVehicleHistory.orders.length}</strong>
+              <span>ordenes</span>
+            </article>
+            <article>
+              <FileText size={18} />
+              <strong>{formatCurrency(selectedVehicleHistory.totalBilled)}</strong>
+              <span>facturado</span>
+            </article>
+            <article>
+              <CalendarClock size={18} />
+              <strong>{selectedVehicleHistory.appointments.length}</strong>
+              <span>turnos</span>
+            </article>
+          </div>
+
+          <div className="history-grid">
+            <div className="history-list">
+              <h3>Ordenes</h3>
+              {selectedVehicleHistory.orders.length ? (
+                selectedVehicleHistory.orders.map((order) => (
+                  <div className="history-row" key={order.id}>
+                    <strong>{order.number}</strong>
+                    <span>{order.status}</span>
+                    <b>{formatCurrency(order.total)}</b>
+                  </div>
+                ))
+              ) : (
+                <p>No hay ordenes para este vehiculo.</p>
+              )}
+            </div>
+            <div className="history-list">
+              <h3>Facturas</h3>
+              {selectedVehicleHistory.invoices.length ? (
+                selectedVehicleHistory.invoices.map((invoice) => (
+                  <div className="history-row" key={invoice.id}>
+                    <strong>{invoice.number}</strong>
+                    <span>{invoice.status}</span>
+                    <b>{formatCurrency(invoice.total)}</b>
+                  </div>
+                ))
+              ) : (
+                <p>No hay facturas asociadas.</p>
+              )}
+            </div>
+            <div className="history-list">
+              <h3>Turnos</h3>
+              {selectedVehicleHistory.appointments.length ? (
+                selectedVehicleHistory.appointments.map((appointment) => (
+                  <div className="history-row" key={appointment.id}>
+                    <strong>{appointment.date}</strong>
+                    <span>{appointment.time}</span>
+                    <b>{appointment.status}</b>
+                  </div>
+                ))
+              ) : (
+                <p>No hay turnos asociados.</p>
+              )}
+            </div>
+          </div>
+        </section>
+      ) : null}
     </section>
   )
 }

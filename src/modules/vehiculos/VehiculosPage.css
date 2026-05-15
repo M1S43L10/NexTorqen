@@ -68,8 +68,107 @@
   color: var(--text-muted);
 }
 
+.history-action {
+  color: var(--primary);
+}
+
+.vehicle-history {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.vehicle-history .form-title p {
+  color: var(--text-muted);
+  margin: 0.2rem 0 0;
+}
+
+.history-summary {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.history-summary article {
+  align-items: center;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.85rem;
+}
+
+.history-summary svg {
+  color: var(--primary);
+}
+
+.history-summary strong,
+.history-summary span {
+  display: block;
+}
+
+.history-summary span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.history-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.history-list {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.9rem;
+}
+
+.history-list h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.history-list p {
+  color: var(--text-muted);
+  font-weight: 800;
+  margin: 0;
+}
+
+.history-row {
+  align-items: center;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 0.45rem;
+  grid-template-columns: 1fr auto auto;
+  padding-top: 0.65rem;
+}
+
+.history-row span {
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.history-row b {
+  color: var(--primary);
+  font-size: 0.88rem;
+}
+
 @media (max-width: 760px) {
   .vehiculos-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .history-grid,
+  .history-summary,
+  .history-row {
     grid-template-columns: 1fr;
   }
 }
